@@ -1,0 +1,53 @@
+{
+  "_from": "ming_mock@1.5.3",
+  "_id": "ming_mock@1.5.2",
+  "_inBundle": false,
+  "_integrity": "sha512-IzltNntX69RNWUzVTkaAjxA0bNg/6yfKoXtKKoGkJFuzusNo0y+UqKEQxy0dovfSNSJUOb4wjfZYnQldwCyecA==",
+  "_location": "/ming_mock",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ming_mock",
+    "name": "ming_mock",
+    "escapedName": "ming_mock",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npm.taobao.org/ming_mock/download/ming_mock-1.5.3.tgz",
+  "_shasum": "f3e065f9e02c3d8c5f26d890b4ee3e67e70d3364",
+  "_spec": "ming_mock",
+  "_where": "C:\\Users\\Administrator\\Desktop\\z",
+  "author": {
+    "name": "minglie"
+  },
+  "bugs": {
+    "url": "https://github.com/minglie/minglie.github.io/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "浏览器模拟服务器",
+  "homepage": "https://minglie.github.io/os/ming_mock/",
+  "keywords": [
+    "mock",
+    "sql"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "ming_mock",
+  "repository": {
+    "type": "git",
+       "url": "git+https://github.com/minglie/ming_mock.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.6.0",
+  "__npminstall_done": "Fri Jun 12 2020 00:02:02 GMT+0800 (中国标准时间)"
+}
