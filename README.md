@@ -1,5 +1,6 @@
    
  # 简介
+
     ming_mock是在浏览器端用express风格mock后端接口小工具
  最新版移除了对jQuery的依赖,如果项目中有jQuery,ming_mock就用jQuery,如果没有就使用默认实现的jQuery
  支持get,post,rest风格真实还原express
@@ -254,7 +255,7 @@ export  {MIO}
 ```
 
 
-# ming_mock提供了基本的增,删,改,查,分页,条件查询接口可直接使用比如添加接口MIO.add({name:"zs"}),内部随机生成一个ID，可以把这些方法覆盖掉
+### ming_mock提供了基本的增,删,改,查,分页,条件查询接口可直接使用比如添加接口MIO.add({name:"zs"}),内部随机生成一个ID，可以把这些方法覆盖掉
 
 ```javascript
         app.post("/add",(req,res)=>{
@@ -307,7 +308,7 @@ export  {MIO}
  https://github.com/minglie/minglie.github.io/blob/master/Snippets/manager/server.js
 
 
-#3.访问mysql,需要启动一个服务,用ming_node搭建,ming_node也是express风格,是单个文件且无依赖
+### 访问mysql,需要启动一个服务,用ming_node搭建,ming_node也是express风格,是单个文件且无依赖
 
 ```sh
 $ npm install ming_node
@@ -369,4 +370,8 @@ app.post("/doSql",async function (req,res) {
 
 # 在线sql测试 
 https://mucfpga.github.io/codeEdit/index.html
+
+#ming_mock的使用详情,请到ming_mock的主页查看
+
+https://minglie.github.io/os/ming_mock/
 
