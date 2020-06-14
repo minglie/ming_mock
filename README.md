@@ -100,6 +100,61 @@ export  {MIO}
 </body>
 </html>
 ```
+# ajax拦截
+ 1.9版本之后增加了对ajax的拦截,ajax请求会转发到app上注册的方法,需要使用
+  M.ajaxInterceptorEnable()开启
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://minglie.github.io/js/M_mock.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+     //开启ajax拦截
+     M.ajaxInterceptorEnable()
+     //发送前钩子
+     M.beforeSend=o=>{console.log("M.beforeSend",o);return true}
+     //响应后钩子
+     M.beforeResponse=o=>{console.log("M.beforeResponse",o)}
+     //app上方法注册
+     app.post("/data.json",(req,res)=>{
+         console.log(req.params)
+         setTimeout(()=>{res.send({"nzme":88})},100)
+     })
+     
+     //ajax post请求 ,app已注册改方法,使用M.ajax 转到 app上
+     axios.request({
+         method : 'post',
+         url : 'https://cdn.liyanhui.com/data.json?id=77',
+         params: {
+             "age":44
+         },
+         data:{
+             "hobby":"goo"
+         }
+     }).then(res => {
+         console.log(res.data);
+     });
+
+     //ajax get请求,app 上未找到注册的方法,使用原生ajax
+     axios.request({
+         method : 'get',
+         url : 'https://cdn.liyanhui.com/data.json?aa=77',
+
+     }).then(res => {
+         console.log(res.data);
+     });
+    </script>
+</head>
+<body>
+</body>
+</html>
+
+
+```
 
 # 普通页面用React使用ming_mock的CRUD
 ```html
