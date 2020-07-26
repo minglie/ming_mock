@@ -913,7 +913,7 @@
 
         return true;
     }
-    M.endResponse=function(data){
+    M.endResponse=function(data,xhr){
 
         return data;
     }
@@ -1219,7 +1219,7 @@
                     this.custom.xhr.onreadystatechange=function(){   
                         if(xhr.status === 200){
                             if(xhr.readyState === 4){
-                                xhr.response= M.endResponse(xhr.response)
+                                xhr.response= M.endResponse(xhr.response,xhr)
                             }
                         } 
                     }
@@ -1244,7 +1244,7 @@
                     that.statusText = HTTP_STATUS_CODES[200]
                     // fix #92 #93 by @qddegtya
                     convert(that.custom.template, that.custom.options).then(d=>{
-                        d= M.endResponse(d)
+                        d= M.endResponse(d,that.custom)
                         that.response = that.responseText = JSON.stringify(d);
                         that.readyState = MockXMLHttpRequest.DONE
                         that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/ ))
