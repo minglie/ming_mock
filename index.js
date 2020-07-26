@@ -3,7 +3,7 @@
  * By : Minglie
  * QQ: 934031452
  * Date :2020.06.14
- * version :1.9.0
+ * version :1.9.1
  */
 (function (window, undefined) {
 
@@ -913,9 +913,9 @@
 
         return true;
     }
-    M.beforeResponse=function(options){
+    M.endResponse=function(data){
 
-        return ;
+        return data;
     }
 
 
@@ -1214,6 +1214,15 @@
                 // 原生 XHR
                 if (!this.match) {
                     this.custom.xhr.send(data)
+                    let xhr= this.custom.xhr;
+              
+                    this.custom.xhr.onreadystatechange=function(){   
+                        if(xhr.status === 200){
+                            if(xhr.readyState === 4){
+                                xhr.response= M.endResponse(xhr.response)
+                            }
+                        } 
+                    }
                     return
                 }
                 // 拦截 XHR
@@ -1235,6 +1244,7 @@
                     that.statusText = HTTP_STATUS_CODES[200]
                     // fix #92 #93 by @qddegtya
                     convert(that.custom.template, that.custom.options).then(d=>{
+                        d= M.endResponse(d)
                         that.response = that.responseText = JSON.stringify(d);
                         that.readyState = MockXMLHttpRequest.DONE
                         that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/ ))
@@ -1374,10 +1384,6 @@
                 data=  M.urlParse(options.body)
             }
             options.data=data;
-            let response= M.beforeResponse(options)
-            if(response){
-                return response
-            }
             if(options.type!="GET" && options.type!="POST"){
                 options.type="GET";
             }

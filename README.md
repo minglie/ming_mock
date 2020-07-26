@@ -118,7 +118,7 @@ export  {MIO}
      //发送前钩子
      M.beforeSend=o=>{console.log("M.beforeSend",o);return true}
      //响应后钩子
-     M.beforeResponse=o=>{console.log("M.beforeResponse",o)}
+    M.endResponse=(d)=>{console.log("QQ",d);return "QQQQQQQQQQ"}
      //app上方法注册
      app.post("/data.json",(req,res)=>{
          console.log(req.params)
