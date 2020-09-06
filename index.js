@@ -2,8 +2,8 @@
  * File : M_mock.js
  * By : Minglie
  * QQ: 934031452
- * Date :2020.06.14
- * version :1.9.2
+ * Date :2020.09.6
+ * version :1.9.3
  */
 (function (window, undefined) {
 
@@ -1154,8 +1154,8 @@
                     that.dispatchEvent(new Event(event.type /*, false, false, that*/ ))
                 }
 
-                // 如果未找到匹配的数据模板，则采用原生 XHR 发送请求。
-                if (!item) {
+                // 如果未找到匹配的数据模板 或者未启用ajax拦截，则采用原生 XHR 发送请求。
+                if (!item || M.ajaxInterceptorStatus==false) {
                     this.match = false;
                     // 创建原生 XHR 对象，调用原生 open()，监听所有原生事件
                     var xhr = createNativeXMLHttpRequest()
@@ -1375,6 +1375,7 @@
             }
             return false;
         }
+        M.findResPonseTemplate=find;
         // 数据模板 ＝> 响应数据
         function convert(item, options) {
             let data={}
@@ -1400,15 +1401,98 @@
                 }
             )
         }
+
+        M.convertResPonseTemplate=convert;
         window.XMLHttpRequest = MockXMLHttpRequest
     }
 
+
+    M.originalFetch=window.fetch.bind(window);
+   
+
+    M.myFetch=async function(...args) {
+        if(M.beforeSend(args)==false){
+            return;
+        }
+        return M.originalFetch(...args).then(async (response) => {
+            let txt = undefined;
+            let [reqPath,reqConfig]=args;
+            reqConfig.url=response.url
+            reqConfig.type=reqConfig.method;
+            let matched = M.findResPonseTemplate(reqConfig);
+            if (matched) {
+                txt=await  M.convertResPonseTemplate(null,reqConfig);
+            }
+          txt= M.endResponse(txt,response)
+          if (txt !== undefined) {
+            const stream = new ReadableStream({
+              start(controller) {
+                const bufView = new Uint8Array(new ArrayBuffer(txt.length));
+                for (var i = 0; i < txt.length; i++) {
+                  bufView[i] = txt.charCodeAt(i);
+                }
+                controller.enqueue(bufView);
+                controller.close();
+              }
+            });
+            const newResponse = new Response(stream, {
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+            });
+            const proxy = new Proxy(newResponse, {
+              get: function(target, name){
+                switch(name) {
+                  case 'ok':
+                  case 'redirected':
+                  case 'type':
+                  case 'url':
+                  case 'useFinalURL':
+                  case 'body':
+                  case 'bodyUsed':
+                    return response[name];
+                }
+                return target[name];
+              }
+            });
+            for (let key in proxy) {
+              if (typeof proxy[key] === 'function') {
+                proxy[key] = proxy[key].bind(newResponse);
+              }
+            }
+            return proxy;
+          } else {
+            return response;
+          }
+        });
+   }
+
+
+
+
     M.ajaxInterceptorEnable=function(){
+        M.ajaxInterceptorStatus=true;
         M.ajaxInterceptor();
     }
+
+    M.ajaxInterceptorDisable=function(){
+        M.ajaxInterceptorStatus=false;
+    }
+
+    M.fetchInterceptorEnable=function(){
+        M.ajaxInterceptorEnable();
+        window.fetch =M.myFetch;
+    }
+
+    M.fetchInterceptorDisable=function(){
+        window.fetch = M.originalFetch;
+    }
+
+
     M.jqueryAjaxInterceptorEnable=function(){
         $.ajax = M.ajax;
     }
+
 
     M.init();
     window.app = App;

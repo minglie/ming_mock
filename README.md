@@ -115,6 +115,15 @@ export  {MIO}
     <script>
      //开启ajax拦截
      M.ajaxInterceptorEnable()
+     
+    //关闭ajax拦截
+    //ajaxInterceptorDisable()
+   
+    //开启fetch拦截
+    //M.fetchInterceptorEnable()
+    //关闭fetch拦截
+    //M.fetchInterceptorDisable()
+
      //发送前钩子
      M.beforeSend=o=>{console.log("M.beforeSend",o);return true}
      //响应后钩子
@@ -152,205 +161,7 @@ export  {MIO}
 <body>
 </body>
 </html>
-
-
 ```
-
-# 普通页面用React使用ming_mock的CRUD
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
-    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
-    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.min.js"></script>
-    <script src="https://minglie.github.io/js/M_mock.js"></script>
-</head>
-
-<script>
-    app.get("/test",(req,res)=>{
-        document.getElementById("requestDiv").innerHTML=JSON.stringify(req.params)
-        res.send(M.result("ok "+req.params.id))
-    })
-</script>
-
-<body>
-<div id="requestDiv" ></div>
-<hr/>
-<hr/>
-<div id="resultDiv" ></div>
-<hr/>
-<hr/>
-
-
-
-<div id="example" class="example"></div>
-
-<script type="text/babel">
-
-    class TodoItem extends React.Component {
-        constructor(props){
-            super(props);
-        }
-
-        handleDelete(id){
-            this.props.delete(id)
-        }
-
-        render() {
-            const {content}= this.props;
-            const r= content.map((u,index)=>{
-                    return(
-                        <li key={u.id}>
-                            {u.id} {u.name}   {u.age}
-                            <button onClick={this.handleDelete.bind(this,u.id)}>删除</button>
-                        </li>
-                    )
-                }
-            );
-            return (
-                <div>{r}</div>
-            )
-        }
-    }
-
-    var M_this={};
-    class TodoList extends React.Component {
-        // 初始化数据
-        constructor(props){
-            super(props);
-            this.state={
-                list:[],
-            };
-            M_this=this;
-        }
-
-        componentDidMount() {
-            this.setState({
-                list:M.listAll()
-            });
-        };
-        handleAdd(e) {
-            M.add({
-                name:this.refs.name.value,
-                age:this.refs.age.value,
-            });
-            this.setState({
-                list:M.listAll()
-            });
-        }
-
-        handleUpdate(e) {
-            M.update({
-                id:this.refs.id.value,
-                name:this.refs.name.value,
-                age:this.refs.age.value,
-            });
-            this.setState({
-                list:M.listAll()
-            });
-        }
-
-        handledelete(e) {
-            M.deleteById(e);
-            M_this.setState({
-                list:M.listAll()
-            });
-        }
-
-
-        handleTest1(e) {
-          let  r=M.get("/test?id=77");
-          document.getElementById("resultDiv").innerHTML=JSON.stringify(r)
-        }
-
-        handleTest2(e) {
-            M.IO.test({id:78}).then(r=>{
-              document.getElementById("resultDiv").innerHTML=JSON.stringify(r)
-            })
-       
-        }
-
-        handleTest3(e) {
-            MIO.test({id:79}).then(r=>{
-              document.getElementById("resultDiv").innerHTML=JSON.stringify(r)
-            })
-        }
-
-
-        render() {
-            return (
-                <div>
-                    <input type="text" ref="id" id="id" placeholder="id" autoComplete="off"/>
-                    <input type="text" ref="name" id="name" placeholder="name" autoComplete="off"/>
-                    <input type="text" ref="age" id="age" placeholder="age" autoComplete="off"/>
-                    <button onClick={this.handleAdd.bind(this)}>添加</button>
-                    <button onClick={this.handleUpdate.bind(this)}>修改</button>
-                    <button onClick={()=>this.handleTest1("test1")}>测试1</button>
-                    <button onClick={()=>this.handleTest2("test2")}>测试2</button>
-                    <button onClick={()=>this.handleTest3("test3")}>测试3</button>
-                    <TodoItem content={this.state.list} delete={this.handledelete}/>
-                </div>
-            );
-        }
-    }
-    ReactDOM.render(
-        <div>
-            <TodoList />
-        </div>,
-        document.getElementById('example')
-    );
-</script>
-
-
-
-</body>
-</html>
-```
-
-
-### ming_mock提供了基本的增,删,改,查,分页,条件查询接口可直接使用比如添加接口MIO.add({name:"zs"}),内部随机生成一个ID，可以把这些方法覆盖掉
-
-```javascript
-        app.post("/add",(req,res)=>{
-            r=M.add(req.params);
-            res.send(M.result(r));
-        });
-
-        app.get("/delete",(req,res)=>{
-            M.deleteById(req.params.id);
-            res.send(M.result("ok"));
-        });
-
-        app.post("/update",(req,res)=>{
-            M.update(req.params);
-            res.send(M.result("ok"));
-        });
-
-        app.get("/getById",(req,res)=>{
-            r=M.getById(req.params.id);
-            res.send(M.result(r));
-        });
-
-        app.get("/listAll",(req,res)=>{
-            r=M.listAll();
-            res.send(M.result(r));
-        });
-
-        app.get("/listByParentId",(req,res)=>{
-            r=M.listByProp({parentId:req.params.parentId});
-            res.send(M.result(r));
-        });
-
-        app.get("/listByPage",(req,res)=>{
-            r=M.listByPage(req.params.startPage,req.params.limit);
-            res.send(M.result(r));
-        })
-```
-
-
-
 
 # 说明
 
