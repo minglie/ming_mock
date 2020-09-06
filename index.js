@@ -2,7 +2,7 @@
  * File : M_mock.js
  * By : Minglie
  * QQ: 934031452
- * Date :2020.09.6
+ * Date :2020.06.14
  * version :1.9.3
  */
 (function (window, undefined) {
@@ -1379,10 +1379,12 @@
         // 数据模板 ＝> 响应数据
         function convert(item, options) {
             let data={}
-            try{
-                data=JSON.parse(options.body)
-            }catch(e){
-                data=  M.urlParse(options.body)
+            if(options.body){
+                try{
+                    data=JSON.parse(options.body)
+                }catch(e){
+                    data=  M.urlParse(options.body)
+                }
             }
             options.data=data;
             if(options.type!="GET" && options.type!="POST"){
