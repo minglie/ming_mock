@@ -22,7 +22,7 @@
             res.send(Promise.resolve(5))
       })
 
-      app.get("/t2/:id/:name",async (req,res)=>{
+      app.get("/t2/:id/name",async (req,res)=>{
             console.log(req.params)
             res.send(Promise.resolve(req.params.id))
       })
