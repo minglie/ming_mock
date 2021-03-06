@@ -4,7 +4,7 @@
     ming_mock是在浏览器端用express风格开发纯前端应用的小工具
  简化板的ming_mock是简化理解ming_mock的实现原理
  地址为
- https://minglie.github.io/js/M_mock0.js
+https://github.com/minglie/minglie.github.io/blob/master/js/M_mock0.js
  
    标准版的ming_mock是ming_node的浏览器版本,大多数方法是通用的可参考ming_node中文件型数据库与web服务等章节
 https://www.yuque.com/docs/share/e1f16015-0719-4ffd-9464-a35610389153?#
