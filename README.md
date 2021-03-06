@@ -1,16 +1,17 @@
    
  # 简介
 
-    ming_mock是在浏览器端用express风格mock后端接口小工具
- 最新版移除了对jQuery的依赖,如果项目中有jQuery,ming_mock就用jQuery,如果没有就使用默认实现的jQuery
- 支持get,post,rest风格真实还原express
+    ming_mock是在浏览器端用express风格开发纯前端应用的小工具
  简化板的ming_mock是简化理解ming_mock的实现原理
  地址为
  https://minglie.github.io/js/M_mock0.js
  
- 
    标准版的ming_mock是ming_node的浏览器版本,大多数方法是通用的可参考ming_node中文件型数据库与web服务等章节
-https://minglie.github.io/os/ming_node/
+https://www.yuque.com/docs/share/e1f16015-0719-4ffd-9464-a35610389153?#
+
+
+# cdn
+https://unpkg.com/ming_mock@1.9.3/index.js
 
 # React中使用ming_mock
 ```sh
@@ -42,7 +43,7 @@ export  {MIO}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://minglie.github.io/js/M_mock.js"></script>
+    <script src="https://unpkg.com/ming_mock@1.9.3/index.js"></script>
 </head>
 <body>
 
@@ -110,7 +111,7 @@ export  {MIO}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://minglie.github.io/js/M_mock.js"></script>
+    <script src="https://unpkg.com/ming_mock@1.9.3/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
      //开启ajax拦截
@@ -164,8 +165,7 @@ export  {MIO}
 ```
 
 # 说明
-
- app.get("/xxx",(req,res)=>{})或app.post("/xxx",(req,res)=>{})会在M.IO上注册xxx方法,
+    app.get("/xxx",(req,res)=>{})或app.post("/xxx",(req,res)=>{})会在M.IO上注册xxx方法,
  用M.IO.xxx({})调用xxx方法,方法的参数必须是对象,app.get的回调函数中通过req.params拿到该对象,
  这完全是express风格的写法
  
@@ -185,42 +185,21 @@ $ node index.js
 index.js内容为
 ```javascript
 
-var M=require("ming_node");
-var mysql  = require('mysql');
-
-myDbconfig={
-    "host"     : "127.0.0.1",
-        "user"     : "root",
-        "password" : "123456",
-        "port"     : "3306",
-        "database" : "guns"
-}
+M = require("ming_node");
 var app=M.server();
 app.listen(8888);
-var Db = {};
-var pool = mysql.createPool(myDbconfig);
-Db.doSql=function(sql){
-    var promise = new Promise(function(reslove,reject){      
-        pool.getConnection(function(err, connection){
-            connection.query( sql, function(err, rows){
-                if(err) {
-                    console.error(err);
-                    reject(err);
-                }else{
-                    reslove(rows);
-                }
-            });
-            
-            connection.release();
-          });
-    })
-    return promise;
+myDbconfig={
+    //  "host"     : "127.0.0.1",
+    //         "user"     : "root",
+    //         "password" : "123456",
+    //         "port"     : "3306",
+       
+     "database" : "miapi"
 }
-
+Db=M.getMySql(myDbconfig);
 app.get("/",async function (req,res) {
     app.redirect("/index.html",req,res);
 });
-
 app.post("/doSql",async function (req,res) {
     try{      
         var rows= await Db.doSql(req.params.sql);
@@ -233,11 +212,9 @@ app.post("/doSql",async function (req,res) {
 
 ```
 
-
 # 在线sql测试 
 https://mucfpga.github.io/codeEdit/index.html
 
-#ming_mock的使用详情,请到ming_mock的主页查看
-
-https://minglie.github.io/os/ming_mock/
+# ming_mock的使用详情
+https://www.yuque.com/docs/share/90bc5474-2120-4081-9ed7-c7edae5fde36?# 《ming_mock》
 
