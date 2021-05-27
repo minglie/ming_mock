@@ -2,7 +2,7 @@
  * File : M_mock.js
  * By : Minglie
  * QQ: 934031452
- * Date :2020.06.14
+ * Date :2021.05.27
  * version :1.9.5
  */
 (function (window, undefined) {
@@ -24,7 +24,7 @@
     if (typeof $ == "undefined") {
         window.$ = {};
         window.$.ajax = function (options) {
-            options.beforeSend()
+            options.beforeSend();
         }
     }
 
@@ -83,7 +83,7 @@
             res.send = function (d) {
                 this.resMap.set("get:" + pureUrl, d);
                 data = App.resMap.get(options.type + ":" + pureUrl);
-                App._end(req,data);
+                App._end(req, data);
                 options.success(data);
             }.bind(this);
             App._begin(req);
@@ -116,8 +116,9 @@
         var exitTime = now.getTime() + numberMillis;
         while (true) {
             now = new Date();
-            if (now.getTime() > exitTime)
+            if (now.getTime() > exitTime) {
                 return;
+            }
         }
     };
 
@@ -186,7 +187,7 @@
     M.getUnderlineObj = function (obj) {
         var result = {};
         for (let field in obj) {
-            result[field.humpToUnderline()] = obj[field]
+            result[field.humpToUnderline()] = obj[field];
         }
         return result;
     };
@@ -197,7 +198,7 @@
     M.getHumpObj = function (obj) {
         var result = {};
         for (let field in obj) {
-            result[field.underlineToHump()] = obj[field]
+            result[field.underlineToHump()] = obj[field];
         }
         return result;
     };
@@ -218,8 +219,9 @@
                 var v = obj[k];
                 var ks = k + "=";
                 fields += ks + v;
-                if (i < flast)
+                if (i < flast) {
                     fields += "&";
+                }
             }
             return fields;
         }
@@ -236,7 +238,7 @@
             var u = t[o].indexOf("=");
             u !== -1 && (r = t[o].substr(0, u),
                 n = t[o].substr(u + 1),
-                s[r] = n)
+                s[r] = n);
         }
         return s
     };
@@ -263,7 +265,7 @@
     M.encodeURIComponentObj = function (data) {
         let ret = '';
         for (let it in data) {
-            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
         }
         return ret
     };
@@ -284,9 +286,9 @@
             mode: 'cors'
         }
         ).then((res) => {
-            return res.json()
+            return res.json();
         }).then((res) => callback(res)).catch((error) => {
-            console.error(error)
+            console.error(error);
         });
     };
 
@@ -302,10 +304,9 @@
             return response.json();
         }).then((resonseData) => {
             callback(resonseData);
-        })
-            .catch((error) => {
-                console.error(error)
-            });
+        }).catch((error) => {
+            console.error(error);
+        });
     };
 
 
@@ -321,44 +322,41 @@
             return response.json();
         }).then((resonseData) => {
             callback(resonseData);
-        })
-            .catch((error) => {
-                console.error(error)
-            });
+        }).catch((error) => {
+            console.error(error);
+        });
     };
 
 
-    M.require=function(url){
-        let promise=new Promise(function (reslove, reject) {
+    M.require = function (url) {
+        let promise = new Promise(function (reslove, reject) {
             fetch(url, {
                 method: 'GET',
                 mode: 'cors'
             }
             ).then((res) => {
-                let  url1=M.formatUrl(url).split("/")
-                url1=url1[url1.length-2];
-             
-                return res.text()
-                
+                let url1 = M.formatUrl(url).split("/");
+                url1 = url1[url1.length - 2];
+                return res.text();
             }).then(
-                d=>{
-                    let r=""
-                    try{
-                        r=JSON.parse(d)
-                    }catch(e){
-                        try{
-                            r=eval(d); 
-                        }catch(e1){
-                            r=d;
-                        } 
+                d => {
+                    let r = "";
+                    try {
+                        r = JSON.parse(d);
+                    } catch (e) {
+                        try {
+                            r = eval(d);
+                        } catch (e1) {
+                            r = d;
+                        }
                     }
-                    reslove(r)
+                    reslove(r);
                 }).catch((error) => {
-                reject(error)
-            });
+                    reject(error);
+                });
         });
-    return promise;
-}
+        return promise;
+    };
 
 
 
@@ -377,10 +375,10 @@
                 if (callback) {
                     callback(resonseData);
                 }
-                reslove(resonseData)
+                reslove(resonseData);
             }).catch((error) => {
-                console.error(error)
-                reject(error)
+                console.error(error);
+                reject(error);
             });
         });
     };
@@ -398,17 +396,16 @@
                 for (let it in data) {
                     ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
                 }
-                return ret
+                return ret;
             }],
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(function (response) {
             callback(response.data);
-        })
-            .catch(function (error) {
-                console.err(error);
-            });
+        }).catch(function (error) {
+            console.err(error);
+        });
     };
 
 
@@ -419,7 +416,7 @@
         return obj;
     };
     M.writeObjToFile = function (file, obj) {
-        localStorage.setItem(file, JSON.stringify(obj))
+        localStorage.setItem(file, JSON.stringify(obj));
     };
 
     M.addObjToFile = function (file, obj) {
@@ -433,7 +430,7 @@
     M.deleteObjByIdFile = function (file, id) {
         let ids = [];
         if (!Array.isArray(id)) {
-            ids.push(id)
+            ids.push(id);
         } else {
             ids = id;
         }
@@ -649,8 +646,8 @@
                         }
                         let s1 = realPathName;
                         let s2 = mapingPath;
-                        s1 = s1.substring(s2.indexOf(":") - 1, s1.length - 1).split("/").slice(1)
-                        s2 = s2.substring(s2.indexOf(":") - 1, s2.length - 1).split("/:").slice(1)
+                        s1 = s1.substring(s2.indexOf(":") - 1, s1.length - 1).split("/").slice(1);
+                        s2 = s2.substring(s2.indexOf(":") - 1, s2.length - 1).split("/:").slice(1);
                         let params = {};
                         for (let i = 0; i < s2.length; i++) { params[s2[i]] = s1[i]; }
                         options.data = Object.assign(params, options.data);
@@ -672,7 +669,7 @@
                 return false;
             },
             success(data) {
-                options.success(data)
+                options.success(data);
             }
         })
     };
@@ -689,7 +686,7 @@
                         data: param,
                         type: type,
                         success: function (data) {
-                            reslove(data)
+                            reslove(data);
                         }
                     });
                 }
@@ -764,8 +761,9 @@
         Db.getUpdateObjSql = function (tableName, obj, caseObj) {
             var fields = [];
             for (let field in obj) {
-                if (field != "id")
+                if (field != "id") {
                     fields.push(field);
+                }
             }
             let sql = "";
             if (!caseObj) {
@@ -773,7 +771,7 @@
             } else {
                 var caseObjfields = [];
                 for (let caseObjfield in caseObj) {
-                    caseObjfields.push(caseObjfield)
+                    caseObjfields.push(caseObjfield);
                 }
                 sql = `update ${tableName} set ${fields.map(u => u + "='" + obj[u] + "'")} where ${caseObjfields.map(u => u + "='" + caseObj[u] + "'").join(" and ")}`;
             }
@@ -803,7 +801,7 @@
                     reject(error);
                     console.error(error.message);
                 }, function (a) {
-                    //console.log(a)
+
                 });
 
             });
@@ -902,33 +900,32 @@
         app.get("/listByPage", (req, res) => {
             r = M.listByPage(req.params.startPage, req.params.limit);
             res.send(M.result(r));
-        })
+        });
     };
 
-    M.urlToPath=function(url){
-        return  url.replace(/^http(s?):\/\/[^/]+/, "");
-    }
+    M.urlToPath = function (url) {
+        return url.replace(/^http(s?):\/\/[^/]+/, "");
+    };
 
-    M.beforeSend=function(options){
+    M.beforeSend = function (options) {
 
         return true;
-    }
-    M.endResponse=function(data,xhr){
-
+    };
+    M.endResponse = function (data, xhr) {
         return data;
-    }
+    };
 
-   /**
-    * 缓存start
-    */
-   M.getRelativePath= function(url,level){
+    /**
+     * 缓存start
+     */
+    M.getRelativePath = function (url, level) {
         var urlarray = url.split("/");
         var resulturl = "";
-        for(var i=0;i<urlarray.length-level;i++){
-            resulturl += urlarray[i]+"/";
+        for (var i = 0; i < urlarray.length - level; i++) {
+            resulturl += urlarray[i] + "/";
         }
         return resulturl;
-    }
+    };
     M.cache = {
         pageVersion: "0.0.1", //页面版本，也由页面输出，用于刷新localStorage缓存
         //动态加载js文件并缓存
@@ -949,9 +946,9 @@
                             if (xhr.readyState == 4 && xhr.status == 200) {
                                 js = xhr.responseText;
                                 localStorage.setItem(name, js);
-                                localStorage.setItem("version",M.cache.pageVersion);
+                                localStorage.setItem("version", M.cache.pageVersion);
                                 js = js == null ? "" : js;
-                               M.cache.writeJs(js);
+                                M.cache.writeJs(js);
                                 if (callback != null) {
                                     callback(); //回调，执行下一个引用
                                 }
@@ -959,13 +956,13 @@
                         };
                     }
                 } else {
-                   M.cache.writeJs(js);
+                    M.cache.writeJs(js);
                     if (callback != null) {
                         callback(); //回调，执行下一个引用
                     }
                 }
             } else {
-               M.cache.linkJs(url);
+                M.cache.linkJs(url);
             }
         },
         loadCss: function (name, url) {
@@ -985,19 +982,19 @@
                             if (xhr.readyState == 4 && xhr.status == 200) {
                                 css = xhr.responseText;
                                 localStorage.setItem(name, css);
-                                localStorage.setItem("version",M.cache.pageVersion);
+                                localStorage.setItem("version", M.cache.pageVersion);
                                 css = css == null ? "" : css;
-                                css = css.replace(/\..\/fonts\//g, M.getRelativePath(url,2)+"fonts/"); //css里的font路径需单独处理
-                               M.cache.writeCss(css);
+                                css = css.replace(/\..\/fonts\//g, M.getRelativePath(url, 2) + "fonts/"); //css里的font路径需单独处理
+                                M.cache.writeCss(css);
                             }
                         };
                     }
                 } else {
-                    css = css.replace(/\..\/fonts\//g, M.getRelativePath(url,2)+"fonts/"); //css里的font路径需单独处理
-                   M.cache.writeCss(css);
+                    css = css.replace(/\..\/fonts\//g, M.getRelativePath(url, 2) + "fonts/"); //css里的font路径需单独处理
+                    M.cache.writeCss(css);
                 }
             } else {
-               M.cache.linkCss(url);
+                M.cache.linkCss(url);
             }
         },
         //往页面写入js脚本
@@ -1036,117 +1033,114 @@
             head.appendChild(link);
         }
     };
-     /**
-    * 缓存end
-    */
+    /**
+   * 缓存end
+   */
 
     /**
     *  ajax 拦截 start
     */
-    M.ajaxInterceptor=function(){
-        var Util = {}
+    M.ajaxInterceptor = function () {
+        var Util = {};
         Util.extend = function extend() {
             var target = arguments[0] || {},
                 i = 1,
                 length = arguments.length,
-                options, name, src, copy, clone
+                options, name, src, copy, clone;
 
             if (length === 1) {
-                target = this
-                i = 0
+                target = this;
+                i = 0;
             }
 
             for (; i < length; i++) {
-                options = arguments[i]
-                if (!options) continue
+                options = arguments[i];
+                if (!options) continue;
 
                 for (name in options) {
-                    src = target[name]
-                    copy = options[name]
+                    src = target[name];
+                    copy = options[name];
 
-                    if (target === copy) continue
-                    if (copy === undefined) continue
+                    if (target === copy) continue;
+                    if (copy === undefined) continue;
 
                     if (Util.isArray(copy) || Util.isObject(copy)) {
-                        if (Util.isArray(copy)) clone = src && Util.isArray(src) ? src : []
-                        if (Util.isObject(copy)) clone = src && Util.isObject(src) ? src : {}
+                        if (Util.isArray(copy)) clone = src && Util.isArray(src) ? src : [];
+                        if (Util.isObject(copy)) clone = src && Util.isObject(src) ? src : {};
 
-                        target[name] = Util.extend(clone, copy)
+                        target[name] = Util.extend(clone, copy);
                     } else {
-                        target[name] = copy
+                        target[name] = copy;
                     }
                 }
             }
 
-            return target
-        }
+            return target;
+        };
 
         Util.each = function each(obj, iterator, context) {
-            var i, key
+            var i, key;
             if (this.type(obj) === 'number') {
                 for (i = 0; i < obj; i++) {
-                    iterator(i, i)
+                    iterator(i, i);
                 }
             } else if (obj.length === +obj.length) {
                 for (i = 0; i < obj.length; i++) {
-                    if (iterator.call(context, obj[i], i, obj) === false) break
+                    if (iterator.call(context, obj[i], i, obj) === false) break;
                 }
             } else {
                 for (key in obj) {
-                    if (iterator.call(context, obj[key], key, obj) === false) break
+                    if (iterator.call(context, obj[key], key, obj) === false) break;
                 }
             }
-        }
+        };
 
         Util.type = function type(obj) {
-            return (obj === null || obj === undefined) ? String(obj) : Object.prototype.toString.call(obj).match(/\[object (\w+)\]/)[1].toLowerCase()
-        }
+            return (obj === null || obj === undefined) ? String(obj) : Object.prototype.toString.call(obj).match(/\[object (\w+)\]/)[1].toLowerCase();
+        };
 
-        Util.each('String Object Array RegExp Function'.split(' '), function(value) {
-            Util['is' + value] = function(obj) {
-                return Util.type(obj) === value.toLowerCase()
+        Util.each('String Object Array RegExp Function'.split(' '), function (value) {
+            Util['is' + value] = function (obj) {
+                return Util.type(obj) === value.toLowerCase();
             }
-        })
+        });
 
-        Util.isObjectOrArray = function(value) {
-            return Util.isObject(value) || Util.isArray(value)
-        }
+        Util.isObjectOrArray = function (value) {
+            return Util.isObject(value) || Util.isArray(value);
+        };
 
-        Util.isNumeric = function(value) {
-            return !isNaN(parseFloat(value)) && isFinite(value)
-        }
+        Util.isNumeric = function (value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
 
-        Util.keys = function(obj) {
+        Util.keys = function (obj) {
             var keys = [];
             for (var key in obj) {
-                if (obj.hasOwnProperty(key)) keys.push(key)
+                if (obj.hasOwnProperty(key)) keys.push(key);
             }
             return keys;
-        }
-        Util.values = function(obj) {
+        };
+        Util.values = function (obj) {
             var values = [];
             for (var key in obj) {
-                if (obj.hasOwnProperty(key)) values.push(obj[key])
+                if (obj.hasOwnProperty(key)) values.push(obj[key]);
             }
             return values;
-        }
+        };
         Util.heredoc = function heredoc(fn) {
-            return fn.toString()
-                .replace(/^[^\/]+\/\*!?/, '')
-                .replace(/\*\/[^\/]+$/, '')
-                .replace(/^[\s\xA0]+/, '').replace(/[\s\xA0]+$/, '') // .trim()
-        }
+            return fn.toString().replace(/^[^\/]+\/\*!?/, '').replace(/\*\/[^\/]+$/, '').replace(/^[\s\xA0]+/, '').replace(/[\s\xA0]+$/, '');
+        };
 
-        Util.noop = function() {}
+        Util.noop = function () { };
 
-        window._XMLHttpRequest = window.XMLHttpRequest
-        window._ActiveXObject = window.ActiveXObject
+        window._XMLHttpRequest = window.XMLHttpRequest;
+        window._ActiveXObject = window.ActiveXObject;
         try {
-            new window.Event('custom')
+            new window.Event('custom');
         } catch (exception) {
-            window.Event = function(type, bubbles, cancelable, detail) {
-                var event = document.createEvent('CustomEvent') // MUST be 'CustomEvent'
-                event.initCustomEvent(type, bubbles, cancelable, detail)
+            window.Event = function (type, bubbles, cancelable, detail) {
+                var event = document.createEvent('CustomEvent');
+                event.initCustomEvent(type, bubbles, cancelable, detail);
                 return event
             }
         }
@@ -1162,11 +1156,11 @@
             LOADING: 3,
             // The data transfer has been completed or something went wrong during the transfer (e.g. infinite redirects).
             DONE: 4
-        }
+        };
 
-        var XHR_EVENTS = 'readystatechange loadstart progress abort error load timeout loadend'.split(' ')
-        var XHR_REQUEST_PROPERTIES = 'timeout withCredentials'.split(' ')
-        var XHR_RESPONSE_PROPERTIES = 'readyState responseURL status statusText responseType response responseText responseXML'.split(' ')
+        var XHR_EVENTS = 'readystatechange loadstart progress abort error load timeout loadend'.split(' ');
+        var XHR_REQUEST_PROPERTIES = 'timeout withCredentials'.split(' ');
+        var XHR_RESPONSE_PROPERTIES = 'readyState responseURL status statusText responseType response responseText responseXML'.split(' ');
 
         // https://github.com/trek/FakeXMLHttpRequest/blob/master/fake_xml_http_request.js#L32
         var HTTP_STATUS_CODES = {
@@ -1211,7 +1205,7 @@
             503: "Service Unavailable",
             504: "Gateway Timeout",
             505: "HTTP Version Not Supported"
-        }
+        };
         function MockXMLHttpRequest() {
             // 初始化 custom 对象，用于存储自定义属性
             this.custom = {
@@ -1219,7 +1213,7 @@
                 requestHeaders: {},
                 responseHeaders: {}
             }
-        }
+        };
 
         MockXMLHttpRequest._settings = {
             timeout: '10-100',
@@ -1227,22 +1221,22 @@
                 timeout: 50,
                 timeout: '10-100',
                 */
-        }
+        };
 
-        MockXMLHttpRequest.setup = function(settings) {
-            Util.extend(MockXMLHttpRequest._settings, settings)
-            return MockXMLHttpRequest._settings
-        }
-        Util.extend(MockXMLHttpRequest, XHR_STATES)
-        Util.extend(MockXMLHttpRequest.prototype, XHR_STATES)
+        MockXMLHttpRequest.setup = function (settings) {
+            Util.extend(MockXMLHttpRequest._settings, settings);
+            return MockXMLHttpRequest._settings;
+        };
+        Util.extend(MockXMLHttpRequest, XHR_STATES);
+        Util.extend(MockXMLHttpRequest.prototype, XHR_STATES);
         // 标记当前对象为 MockXMLHttpRequest
-        MockXMLHttpRequest.prototype.mock = true
+        MockXMLHttpRequest.prototype.mock = true;
         // 是否拦截 Ajax 请求
-        MockXMLHttpRequest.prototype.match = true
+        MockXMLHttpRequest.prototype.match = true;
         // 初始化 Request 相关的属性和方法
         Util.extend(MockXMLHttpRequest.prototype, {
-            open: function(method, url, async, username, password) {
-                var that = this
+            open: function (method, url, async, username, password) {
+                var that = this;
                 Util.extend(this.custom, {
                     method: method,
                     url: url,
@@ -1253,76 +1247,76 @@
                         url: url,
                         type: method
                     }
-                })
-                this.custom.timeout = function(timeout) {
-                    if (typeof timeout === 'number') return timeout
-                    if (typeof timeout === 'string' && !~timeout.indexOf('-')) return parseInt(timeout, 10)
+                });
+                this.custom.timeout = function (timeout) {
+                    if (typeof timeout === 'number') return timeout;
+                    if (typeof timeout === 'string' && !~timeout.indexOf('-')) return parseInt(timeout, 10);
                     if (typeof timeout === 'string' && ~timeout.indexOf('-')) {
-                        var tmp = timeout.split('-')
-                        var min = parseInt(tmp[0], 10)
-                        var max = parseInt(tmp[1], 10)
-                        return Math.round(Math.random() * (max - min)) + min
+                        var tmp = timeout.split('-');
+                        var min = parseInt(tmp[0], 10);
+                        var max = parseInt(tmp[1], 10);
+                        return Math.round(Math.random() * (max - min)) + min;
                     }
-                }(MockXMLHttpRequest._settings.timeout)
+                }(MockXMLHttpRequest._settings.timeout);
 
                 // 查找与请求参数匹配的数据模板
-                var item = find(this.custom.options)
+                var item = find(this.custom.options);
                 function handle(event) {
                     // 同步属性 NativeXMLHttpRequest => MockXMLHttpRequest
                     for (var i = 0; i < XHR_RESPONSE_PROPERTIES.length; i++) {
                         try {
-                            that[XHR_RESPONSE_PROPERTIES[i]] = xhr[XHR_RESPONSE_PROPERTIES[i]]
-                        } catch (e) {}
+                            that[XHR_RESPONSE_PROPERTIES[i]] = xhr[XHR_RESPONSE_PROPERTIES[i]];
+                        } catch (e) { }
                     }
                     // 触发 MockXMLHttpRequest 上的同名事件
-                    that.dispatchEvent(new Event(event.type /*, false, false, that*/ ))
-                }
+                    that.dispatchEvent(new Event(event.type /*, false, false, that*/));
+                };
 
                 // 如果未找到匹配的数据模板 或者未启用ajax拦截，则采用原生 XHR 发送请求。
-                if (!item || M.ajaxInterceptorStatus==false) {
+                if (!item || M.ajaxInterceptorStatus == false) {
                     this.match = false;
                     // 创建原生 XHR 对象，调用原生 open()，监听所有原生事件
-                    var xhr = createNativeXMLHttpRequest()
-                    this.custom.xhr = xhr
+                    var xhr = createNativeXMLHttpRequest();
+                    this.custom.xhr = xhr;
 
                     // 初始化所有事件，用于监听原生 XHR 对象的事件
                     for (var i = 0; i < XHR_EVENTS.length; i++) {
-                        xhr.addEventListener(XHR_EVENTS[i], handle)
+                        xhr.addEventListener(XHR_EVENTS[i], handle);
                     }
 
                     // xhr.open()
-                    if (username) xhr.open(method, url, async, username, password)
-                    else xhr.open(method, url, async)
+                    if (username) xhr.open(method, url, async, username, password);
+                    else xhr.open(method, url, async);
 
                     // 同步属性 MockXMLHttpRequest => NativeXMLHttpRequest
                     for (var j = 0; j < XHR_REQUEST_PROPERTIES.length; j++) {
                         try {
-                            xhr[XHR_REQUEST_PROPERTIES[j]] = that[XHR_REQUEST_PROPERTIES[j]]
-                        } catch (e) {}
-                    }
+                            xhr[XHR_REQUEST_PROPERTIES[j]] = that[XHR_REQUEST_PROPERTIES[j]];
+                        } catch (e) { }
+                    };
 
                     return
-                }
+                };
 
                 // 找到了匹配的数据模板，开始拦截 XHR 请求
-                this.match = true
-                this.custom.template = item
-                this.readyState = MockXMLHttpRequest.OPENED
-                this.dispatchEvent(new Event('readystatechange' /*, false, false, this*/ ))
+                this.match = true;
+                this.custom.template = item;
+                this.readyState = MockXMLHttpRequest.OPENED;
+                this.dispatchEvent(new Event('readystatechange' /*, false, false, this*/));
             },
             // https://xhr.spec.whatwg.org/#the-setrequestheader()-method
             // Combines a header in author request headers.
-            setRequestHeader: function(name, value) {
+            setRequestHeader: function (name, value) {
                 // 原生 XHR
                 if (!this.match) {
-                    this.custom.xhr.setRequestHeader(name, value)
-                    return
+                    this.custom.xhr.setRequestHeader(name, value);
+                    return;
                 }
 
                 // 拦截 XHR
-                var requestHeaders = this.custom.requestHeaders
-                if (requestHeaders[name]) requestHeaders[name] += ',' + value
-                else requestHeaders[name] = value
+                var requestHeaders = this.custom.requestHeaders;
+                if (requestHeaders[name]) requestHeaders[name] += ',' + value;
+                else requestHeaders[name] = value;
             },
             timeout: 0,
             withCredentials: false,
@@ -1330,51 +1324,48 @@
             // https://xhr.spec.whatwg.org/#the-send()-method
             // Initiates the request.
             send: function send(data) {
-                var that = this
-                this.custom.options.body = data
-                if(M.beforeSend(this.custom.options)==false){
+                var that = this;
+                this.custom.options.body = data;
+                if (M.beforeSend(this.custom.options) == false) {
                     return;
                 }
                 // 原生 XHR
                 if (!this.match) {
-                    this.custom.xhr.send(data)
-                    let xhr= this.custom.xhr;
-              
-                    this.custom.xhr.onreadystatechange=function(){   
-                        if(xhr.status === 200){
-                            if(xhr.readyState === 4){
-                                xhr.response= M.endResponse(xhr.response,xhr)
+                    this.custom.xhr.send(data);
+                    let xhr = this.custom.xhr;
+                    this.custom.xhr.onreadystatechange = function () {
+                        if (xhr.status === 200) {
+                            if (xhr.readyState === 4) {
+                                xhr.response = M.endResponse(xhr.response, xhr);
                             }
-                        } 
+                        }
                     }
-                    return
-                }
+                    return;
+                };
                 // 拦截 XHR
-                // X-Requested-With header
-                this.setRequestHeader('X-Requested-With', 'MockXMLHttpRequest')
-
+                this.setRequestHeader('X-Requested-With', 'MockXMLHttpRequest');
                 // loadstart The fetch initiates.
-                this.dispatchEvent(new Event('loadstart' /*, false, false, this*/ ))
+                this.dispatchEvent(new Event('loadstart' /*, false, false, this*/));
 
-                if (this.custom.async) setTimeout(done, this.custom.timeout) // 异步
-                else done() // 同步
+                if (this.custom.async) setTimeout(done, this.custom.timeout);// 异步
+                else done();// 同步
 
                 function done() {
-                    that.readyState = MockXMLHttpRequest.HEADERS_RECEIVED
-                    that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/ ))
-                    that.readyState = MockXMLHttpRequest.LOADING
-                    that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/ ))
-                    that.status = 200
-                    that.statusText = HTTP_STATUS_CODES[200]
+                    that.readyState = MockXMLHttpRequest.HEADERS_RECEIVED;
+                    that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/));
+                    that.readyState = MockXMLHttpRequest.LOADING;
+                    that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/));
+                    that.status = 200;
+                    that.statusText = HTTP_STATUS_CODES[200];
                     // fix #92 #93 by @qddegtya
-                    convert(that.custom.template, that.custom.options).then(d=>{
-                        d= M.endResponse(d,that.custom)
+                    convert(that.custom.template, that.custom.options).then(d => {
+                        d = M.endResponse(d, that.custom);
                         that.response = that.responseText = JSON.stringify(d);
-                        that.readyState = MockXMLHttpRequest.DONE
-                        that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/ ))
-                        that.dispatchEvent(new Event('load' /*, false, false, that*/ ));
-                        that.dispatchEvent(new Event('loadend' /*, false, false, that*/ ));
-                    })
+                        that.readyState = MockXMLHttpRequest.DONE;
+                        that.dispatchEvent(new Event('readystatechange' /*, false, false, that*/));
+                        that.dispatchEvent(new Event('load' /*, false, false, that*/));
+                        that.dispatchEvent(new Event('loadend' /*, false, false, that*/));
+                    });
                 }
             },
             // https://xhr.spec.whatwg.org/#the-abort()-method
@@ -1382,16 +1373,16 @@
             abort: function abort() {
                 // 原生 XHR
                 if (!this.match) {
-                    this.custom.xhr.abort()
-                    return
-                }
+                    this.custom.xhr.abort();
+                    return;
+                };
 
                 // 拦截 XHR
-                this.readyState = MockXMLHttpRequest.UNSENT
-                this.dispatchEvent(new Event('abort', false, false, this))
-                this.dispatchEvent(new Event('error', false, false, this))
+                this.readyState = MockXMLHttpRequest.UNSENT;
+                this.dispatchEvent(new Event('abort', false, false, this));
+                this.dispatchEvent(new Event('error', false, false, this));
             }
-        })
+        });
 
         // 初始化 Response 相关的属性和方法
         Util.extend(MockXMLHttpRequest.prototype, {
@@ -1399,121 +1390,120 @@
             status: MockXMLHttpRequest.UNSENT,
             statusText: '',
             // https://xhr.spec.whatwg.org/#the-getresponseheader()-method
-            getResponseHeader: function(name) {
+            getResponseHeader: function (name) {
                 // 原生 XHR
                 if (!this.match) {
-                    return this.custom.xhr.getResponseHeader(name)
-                }
+                    return this.custom.xhr.getResponseHeader(name);
+                };
                 // 拦截 XHR
-                return this.custom.responseHeaders[name.toLowerCase()]
+                return this.custom.responseHeaders[name.toLowerCase()];
             },
             // https://xhr.spec.whatwg.org/#the-getallresponseheaders()-method
             // http://www.utf8-chartable.de/
-            getAllResponseHeaders: function() {
+            getAllResponseHeaders: function () {
                 // 原生 XHR
                 if (!this.match) {
-                    return this.custom.xhr.getAllResponseHeaders()
+                    return this.custom.xhr.getAllResponseHeaders();
                 }
 
                 // 拦截 XHR
-                var responseHeaders = this.custom.responseHeaders
-                var headers = ''
+                var responseHeaders = this.custom.responseHeaders;
+                var headers = '';
                 for (var h in responseHeaders) {
-                    if (!responseHeaders.hasOwnProperty(h)) continue
-                    headers += h + ': ' + responseHeaders[h] + '\r\n'
+                    if (!responseHeaders.hasOwnProperty(h)) continue;
+                    headers += h + ': ' + responseHeaders[h] + '\r\n';
                 }
-                return headers
+                return headers;
             },
-            overrideMimeType: function( /*mime*/ ) {},
+            overrideMimeType: function ( /*mime*/) { },
             responseType: '', // '', 'text', 'arraybuffer', 'blob', 'document', 'json'
             response: null,
             responseText: '',
             responseXML: null
-        })
+        });
 
         // EventTarget
         Util.extend(MockXMLHttpRequest.prototype, {
             addEventListener: function addEventListener(type, handle) {
-                var events = this.custom.events
-                if (!events[type]) events[type] = []
-                events[type].push(handle)
+                var events = this.custom.events;
+                if (!events[type]) events[type] = [];
+                events[type].push(handle);
             },
             removeEventListener: function removeEventListener(type, handle) {
-                var handles = this.custom.events[type] || []
+                var handles = this.custom.events[type] || [];
                 for (var i = 0; i < handles.length; i++) {
                     if (handles[i] === handle) {
-                        handles.splice(i--, 1)
+                        handles.splice(i--, 1);
                     }
                 }
             },
             dispatchEvent: function dispatchEvent(event) {
-                var handles = this.custom.events[event.type] || []
+                var handles = this.custom.events[event.type] || [];
                 for (var i = 0; i < handles.length; i++) {
-                    handles[i].call(this, event)
-                }
-
-                var ontype = 'on' + event.type
-                if (this[ontype]) this[ontype](event)
+                    handles[i].call(this, event);
+                };
+                var ontype = 'on' + event.type;
+                if (this[ontype]) this[ontype](event);
             }
-        })
+        });
 
         // Inspired by jQuery
         function createNativeXMLHttpRequest() {
-            var isLocal = function() {
-                var rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/
-                var rurl = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/
-                var ajaxLocation = location.href
-                var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
-                return rlocalProtocol.test(ajaxLocParts[1])
-            }()
+            var isLocal = function () {
+                var rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
+                var rurl = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/;
+                var ajaxLocation = location.href;
+                var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || [];
+                return rlocalProtocol.test(ajaxLocParts[1]);
+            }();
 
             return window.ActiveXObject ?
-                (!isLocal && createStandardXHR() || createActiveXHR()) : createStandardXHR()
+                (!isLocal && createStandardXHR() || createActiveXHR()) : createStandardXHR();
 
             function createStandardXHR() {
                 try {
                     return new window._XMLHttpRequest();
-                } catch (e) {}
+                } catch (e) { }
             }
 
             function createActiveXHR() {
                 try {
                     return new window._ActiveXObject("Microsoft.XMLHTTP");
-                } catch (e) {}
+                } catch (e) { }
             }
         }
         // 查找与请求参数匹配的数据模板：URL，Type
         function find(options) {
-            let path=M.urlToPath(options.url)
-            let formatUrl=M.formatUrl(path)
-            options.path=path;
-            options.formatUrl=formatUrl;
-            if(options.type=="POST"){
-                if(Object.keys(app._post).indexOf(formatUrl)>-1){
-                    return  true
+            let path = M.urlToPath(options.url);
+            let formatUrl = M.formatUrl(path);
+            options.path = path;
+            options.formatUrl = formatUrl;
+            if (options.type == "POST") {
+                if (Object.keys(app._post).indexOf(formatUrl) > -1) {
+                    return true;
                 }
-            }else{
-                if(Object.keys(app._get).indexOf(formatUrl)>-1){
-                    return  true
+            } else {
+                if (Object.keys(app._get).indexOf(formatUrl) > -1) {
+                    return true;
                 }
             }
             return false;
-        }
-        M.findResPonseTemplate=find;
+        };
+        M.findResPonseTemplate = find;
         // 数据模板 ＝> 响应数据
         function convert(item, options) {
-            let data={}
-            if(options.body){
-                try{
-                    data=JSON.parse(options.body)
-                }catch(e){
-                    data=  M.urlParse(options.body)
+            let data = {};
+            if (options.body) {
+                try {
+                    data = JSON.parse(options.body);
+                } catch (e) {
+                    data = M.urlParse(options.body);
                 }
-            }
-            options.data=data;
-            if(options.type!="GET" && options.type!="POST"){
-                options.type="GET";
-            }
+            };
+            options.data = data;
+            if (options.type != "GET" && options.type != "POST") {
+                options.type = "GET";
+            };
             return new Promise(
                 function (reslove) {
                     M.ajax({
@@ -1521,103 +1511,103 @@
                         data: data,
                         type: options.type.toLocaleLowerCase(),
                         success: function (data) {
-                            reslove(data)
+                            reslove(data);
                         }
                     });
                 }
             )
-        }
+        };
 
-        M.convertResPonseTemplate=convert;
-        window.XMLHttpRequest = MockXMLHttpRequest
-    }
+        M.convertResPonseTemplate = convert;
+        window.XMLHttpRequest = MockXMLHttpRequest;
+    };
 
 
-    M.originalFetch=window.fetch.bind(window);
-   
+    M.originalFetch = window.fetch.bind(window);
 
-    M.myFetch=async function(...args) {
-        if(M.beforeSend(args)==false){
+
+    M.myFetch = async function (...args) {
+        if (M.beforeSend(args) == false) {
             return;
-        }
+        };
         return M.originalFetch(...args).then(async (response) => {
             let txt = undefined;
-            let [reqPath,reqConfig]=args;
-            reqConfig.url=response.url
-            reqConfig.type=reqConfig.method;
+            let [reqPath, reqConfig] = args;
+            reqConfig.url = response.url;
+            reqConfig.type = reqConfig.method;
             let matched = M.findResPonseTemplate(reqConfig);
             if (matched) {
-                txt=await  M.convertResPonseTemplate(null,reqConfig);
-            }
-          txt= M.endResponse(txt,response)
-          if (txt !== undefined) {
-            const stream = new ReadableStream({
-              start(controller) {
-                const bufView = new Uint8Array(new ArrayBuffer(txt.length));
-                for (var i = 0; i < txt.length; i++) {
-                  bufView[i] = txt.charCodeAt(i);
+                txt = await M.convertResPonseTemplate(null, reqConfig);
+            };
+            txt = M.endResponse(txt, response);
+            if (txt !== undefined) {
+                const stream = new ReadableStream({
+                    start(controller) {
+                        const bufView = new Uint8Array(new ArrayBuffer(txt.length));
+                        for (var i = 0; i < txt.length; i++) {
+                            bufView[i] = txt.charCodeAt(i);
+                        };
+                        controller.enqueue(bufView);
+                        controller.close();
+                    }
+                });
+                const newResponse = new Response(stream, {
+                    headers: response.headers,
+                    status: response.status,
+                    statusText: response.statusText,
+                });
+                const proxy = new Proxy(newResponse, {
+                    get: function (target, name) {
+                        switch (name) {
+                            case 'ok':
+                            case 'redirected':
+                            case 'type':
+                            case 'url':
+                            case 'useFinalURL':
+                            case 'body':
+                            case 'bodyUsed':
+                                return response[name];
+                        }
+                        return target[name];
+                    }
+                });
+                for (let key in proxy) {
+                    if (typeof proxy[key] === 'function') {
+                        proxy[key] = proxy[key].bind(newResponse);
+                    }
                 }
-                controller.enqueue(bufView);
-                controller.close();
-              }
-            });
-            const newResponse = new Response(stream, {
-              headers: response.headers,
-              status: response.status,
-              statusText: response.statusText,
-            });
-            const proxy = new Proxy(newResponse, {
-              get: function(target, name){
-                switch(name) {
-                  case 'ok':
-                  case 'redirected':
-                  case 'type':
-                  case 'url':
-                  case 'useFinalURL':
-                  case 'body':
-                  case 'bodyUsed':
-                    return response[name];
-                }
-                return target[name];
-              }
-            });
-            for (let key in proxy) {
-              if (typeof proxy[key] === 'function') {
-                proxy[key] = proxy[key].bind(newResponse);
-              }
+                return proxy;
+            } else {
+                return response;
             }
-            return proxy;
-          } else {
-            return response;
-          }
         });
-   }
+    };
 
 
 
 
-    M.ajaxInterceptorEnable=function(){
-        M.ajaxInterceptorStatus=true;
+    M.ajaxInterceptorEnable = function () {
+        M.ajaxInterceptorStatus = true;
         M.ajaxInterceptor();
-    }
+    };
 
-    M.ajaxInterceptorDisable=function(){
-        M.ajaxInterceptorStatus=false;
-    }
+    M.ajaxInterceptorDisable = function () {
+        M.ajaxInterceptorStatus = false;
+    };
 
-    M.fetchInterceptorEnable=function(){
+    M.fetchInterceptorEnable = function () {
         M.ajaxInterceptorEnable();
-        window.fetch =M.myFetch;
-    }
+        window.fetch = M.myFetch;
+    };
 
-    M.fetchInterceptorDisable=function(){
+    M.fetchInterceptorDisable = function () {
         window.fetch = M.originalFetch;
-    }
+    };
 
 
-    M.jqueryAjaxInterceptorEnable=function(){
+    M.jqueryAjaxInterceptorEnable = function () {
         $.ajax = M.ajax;
-    }
+    };
     /**
     *  ajax 拦截 end
     */
