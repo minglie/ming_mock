@@ -11,7 +11,10 @@ https://www.yuque.com/docs/share/e1f16015-0719-4ffd-9464-a35610389153?#
 
 
 # cdn
-https://unpkg.com/ming_mock@1.9.3/index.js
+https://unpkg.com/ming_mock@1.9.7/index.js
+
+# 压缩cdn
+https://unpkg.com/ming_mock@1.9.7/dist/ming_mock.min.js
 
 # React中使用ming_mock
 ```sh
@@ -43,7 +46,7 @@ export  {MIO}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://unpkg.com/ming_mock@1.9.3/index.js"></script>
+    <script src="https://unpkg.com/ming_mock@1.9.7/index.js"></script>
 </head>
 <body>
 
@@ -111,7 +114,7 @@ export  {MIO}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://unpkg.com/ming_mock@1.9.3/index.js"></script>
+    <script src="https://unpkg.com/ming_mock@1.9.7/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
      //开启ajax拦截
@@ -160,6 +163,31 @@ export  {MIO}
     </script>
 </head>
 <body>
+</body>
+</html>
+```
+
+#  localstage静态资源缓存
+``` html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/ming_mock@1.9.7/index.js"></script>
+</head>
+<body>
+<button id="bt1">测试get</button>
+<script>
+       M.cache.loadJs("jquery", "//cdn.bootcss.com/jquery/1.12.4/jquery.min.js",
+         ()=>{
+             console.log($)
+         }
+     );
+</script>
+
+    
 </body>
 </html>
 ```
