@@ -3,7 +3,7 @@
  * By : Minglie
  * QQ: 934031452
  * Date :2020.06.14
- * version :1.9.3
+ * version :1.9.5
  */
 (function (window, undefined) {
 
@@ -83,7 +83,7 @@
             res.send = function (d) {
                 this.resMap.set("get:" + pureUrl, d);
                 data = App.resMap.get(options.type + ":" + pureUrl);
-                App._end(data);
+                App._end(req,data);
                 options.success(data);
             }.bind(this);
             App._begin(req);
@@ -918,7 +918,131 @@
         return data;
     }
 
+   /**
+    * 缓存start
+    */
+   M.getRelativePath= function(url,level){
+        var urlarray = url.split("/");
+        var resulturl = "";
+        for(var i=0;i<urlarray.length-level;i++){
+            resulturl += urlarray[i]+"/";
+        }
+        return resulturl;
+    }
+    M.cache = {
+        pageVersion: "0.0.1", //页面版本，也由页面输出，用于刷新localStorage缓存
+        //动态加载js文件并缓存
+        loadJs: function (name, url, callback) {
+            if (window.localStorage) {
+                var xhr;
+                var js = localStorage.getItem(name);
+                if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem("version")) {
+                    if (window.ActiveXObject) {
+                        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                    } else if (window.XMLHttpRequest) {
+                        xhr = new XMLHttpRequest();
+                    }
+                    if (xhr != null) {
+                        xhr.open("GET", url);
+                        xhr.send(null);
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                js = xhr.responseText;
+                                localStorage.setItem(name, js);
+                                localStorage.setItem("version",M.cache.pageVersion);
+                                js = js == null ? "" : js;
+                               M.cache.writeJs(js);
+                                if (callback != null) {
+                                    callback(); //回调，执行下一个引用
+                                }
+                            }
+                        };
+                    }
+                } else {
+                   M.cache.writeJs(js);
+                    if (callback != null) {
+                        callback(); //回调，执行下一个引用
+                    }
+                }
+            } else {
+               M.cache.linkJs(url);
+            }
+        },
+        loadCss: function (name, url) {
+            if (window.localStorage) {
+                var xhr;
+                var css = localStorage.getItem(name);
+                if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem("version")) {
+                    if (window.ActiveXObject) {
+                        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                    } else if (window.XMLHttpRequest) {
+                        xhr = new XMLHttpRequest();
+                    }
+                    if (xhr != null) {
+                        xhr.open("GET", url);
+                        xhr.send(null);
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                css = xhr.responseText;
+                                localStorage.setItem(name, css);
+                                localStorage.setItem("version",M.cache.pageVersion);
+                                css = css == null ? "" : css;
+                                css = css.replace(/\..\/fonts\//g, M.getRelativePath(url,2)+"fonts/"); //css里的font路径需单独处理
+                               M.cache.writeCss(css);
+                            }
+                        };
+                    }
+                } else {
+                    css = css.replace(/\..\/fonts\//g, M.getRelativePath(url,2)+"fonts/"); //css里的font路径需单独处理
+                   M.cache.writeCss(css);
+                }
+            } else {
+               M.cache.linkCss(url);
+            }
+        },
+        //往页面写入js脚本
+        writeJs: function (text) {
+            var head = document.getElementsByTagName('HEAD').item(0);
+            var link = document.createElement("script");
+            link.type = "text/javascript";
+            link.innerHTML = text;
+            head.appendChild(link);
+        },
+        //往页面写入css样式
+        writeCss: function (text) {
+            var head = document.getElementsByTagName('HEAD').item(0);
+            var link = document.createElement("style");
+            link.type = "text/css";
+            link.innerHTML = text;
+            head.appendChild(link);
+        },
+        //往页面引入js脚本
+        linkJs: function (url) {
+            var head = document.getElementsByTagName('HEAD').item(0);
+            var link = document.createElement("script");
+            link.type = "text/javascript";
+            link.src = url;
+            head.appendChild(link);
+        },
+        //往页面引入css样式
+        linkCss: function (url) {
+            var head = document.getElementsByTagName('HEAD').item(0);
+            var link = document.createElement("link");
+            link.type = "text/css";
+            link.rel = "stylesheet";
+            link.rev = "stylesheet";
+            link.media = "screen";
+            link.href = url;
+            head.appendChild(link);
+        }
+    };
+     /**
+    * 缓存end
+    */
 
+    /**
+    *  ajax 拦截 start
+    */
     M.ajaxInterceptor=function(){
         var Util = {}
         Util.extend = function extend() {
@@ -1494,7 +1618,9 @@
     M.jqueryAjaxInterceptorEnable=function(){
         $.ajax = M.ajax;
     }
-
+    /**
+    *  ajax 拦截 end
+    */
 
     M.init();
     window.app = App;
