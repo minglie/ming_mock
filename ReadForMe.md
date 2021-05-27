@@ -1,2 +1,2 @@
 压缩工具
-https://tool.lu/js/index.html
+https://www.jb51.net/tools/jsmin/index.htm
