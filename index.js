@@ -2,13 +2,18 @@
  * File : M_mock.js
  * By : Minglie
  * QQ: 934031452
- * Date :2021.05.27
- * version :1.9.5
+ * Date :2021.06.4
+ * version :2.0.0
  */
 (function (window, undefined) {
 
     var M = {};
-
+    //全局状态
+    M._global_state = {}
+    //订阅全局状态的组件
+    M._global_state_subscribe_component = {}
+    //全局组件
+    M.Component={}
     M.init_server_enable = true;
     M.host = "";
     M.map_path = "map_path";
@@ -37,6 +42,7 @@
         //key为去除rest参数的url,val为原始url
         _rest: {},
         _get: {},
+        _use: {},
         _post: {},
         _begin: function () {
         },
@@ -48,6 +54,17 @@
         },
         end(callback) {
             App._end = callback;
+        },
+        use(url,callback){
+            if (Array.isArray(url)) {
+                url.forEach(u=>{
+                    let regExp=new RegExp(u)
+                    App._use[u] = {url,regExp,callback};
+                })
+            } else {
+                let regExp=new RegExp(url)
+                App._use[url] = {url,regExp,callback};
+            }
         },
         /**
          * 注册get方法
@@ -73,37 +90,51 @@
             url = M.formatUrl(url);
             App._post[url] = callback;
         },
-        doget(pureUrl, options) {
+        async douse(req, res) {
+            for (let key in App._use){
+                if(App._use[key].regExp.test(req.url)){
+                   await  App._use[key].callback(req,res);
+                   return;
+                }
+            }
+        },
+        async doget(pureUrl, options) {
             req = {};
             res = {};
+            res.alreadySend = false;
             req.params = App.reqMap.get("get:" + pureUrl);
             req.method = "get";
             req.pureUrl = pureUrl;
             req.url = options.url;
             res.send = function (d) {
+                res.alreadySend = true;
                 this.resMap.set("get:" + pureUrl, d);
                 data = App.resMap.get(options.type + ":" + pureUrl);
                 App._end(req, data);
                 options.success(data);
             }.bind(this);
-            App._begin(req);
-            App._get[pureUrl](req, res);
+            await App._begin(req, res);
+            if (!res.alreadySend) await App.douse(req, res);
+            if (!res.alreadySend) await App._get[pureUrl](req, res);
         },
-        dopost(pureUrl, options) {
+        async dopost(pureUrl, options) {
             req = {};
             res = {};
+            res.alreadySend = false;
             req.params = App.reqMap.get("post:" + pureUrl);
             req.method = "post";
             req.pureUrl = pureUrl;
             req.url = options.url;
             res.send = function (d) {
+                res.alreadySend = true;
                 this.resMap.set("post:" + pureUrl, d);
                 data = App.resMap.get(options.type + ":" + pureUrl);
-                App._end(data);
+                App._end(req,data);
                 options.success(data);
             }.bind(this);
-            App._begin(req, res);
-            App._post[pureUrl](req, res);
+            await App._begin(req, res);
+            if (!res.alreadySend) await App.douse(req, res);
+            if (!res.alreadySend) await App._post[pureUrl](req, res);
         }
     };
 
@@ -126,34 +157,34 @@
      * ----------------------服务器端START--------------------------------------------
      */
     M.get = function (url, param) {
-        let u;
-        M.ajax({
-            url: url,
-            async: false,
-            type: 'get',
-            data: param,
-            dataType: 'json',
-            success: function (data) {
-                u = data;
+        return new Promise(
+            function (reslove) {
+                M.ajax({
+                    url: url,
+                    data: param,
+                    type: "get",
+                    success: function (data) {
+                        reslove(data);
+                    }
+                });
             }
-        });
-        return u;
+        )
     };
 
 
     M.post = function (url, param) {
-        let u;
-        M.ajax({
-            url: url,
-            async: false,
-            type: 'post',
-            data: param,
-            dataType: 'json',
-            success: function (data) {
-                u = data;
+        return new Promise(
+            function (reslove) {
+                M.ajax({
+                    url: url,
+                    data: param,
+                    type: "post",
+                    success: function (data) {
+                        reslove(data);
+                    }
+                });
             }
-        });
-        return u;
+        )
     };
 
 
@@ -1608,11 +1639,74 @@
     M.jqueryAjaxInterceptorEnable = function () {
         $.ajax = M.ajax;
     };
+
+    M.getComponentName=function(componentName){
+       let funStr=componentName._reactInternalFiber.type.toString();
+       let re = /function\s*(\w*)/i;
+       let matches = re.exec(funStr);
+       return matches[1];
+    }
+
+
     /**
     *  ajax 拦截 end
     */
+    M.initRedux=function(){
+        let handler = {
+            get (target, key, receiver) {
+                return Reflect.get(target, key, receiver)
+            },
+            set (target, key, value, receiver) {
+                if(M._global_state_subscribe_component[key]){
+                    let oldValue=M._global_state[key]
+                    let newValue=value
+                    if(oldValue){
+                        newValue=Object.assign(oldValue,value)
+                    }
+                    M._global_state_subscribe_component[key].forEach(c=>c.setState(newValue))
+                }
+                return Reflect.set(target, key, value, receiver)
+            }
+        }
+        M.State = new Proxy(M._global_state , handler);
+
+        M.subReg=function (componentName,componentThis,stateName,initState){
+            if(typeof(componentName)!="string"){
+                initState=stateName;
+                stateName=componentThis;
+                componentThis=componentName;
+                componentName=M.getComponentName(componentName);
+            }
+            M.Component[componentName]=componentThis;
+            if(stateName){
+                if( !M._global_state_subscribe_component[stateName]){
+                    let  subscribe_component_set=new Set();
+                    subscribe_component_set.add(componentThis);
+                    M._global_state_subscribe_component[stateName]=subscribe_component_set;
+                }else {
+                    //初始状态
+                    M._global_state[stateName]=initState;
+                    let  subscribe_component_set= M._global_state_subscribe_component[stateName]
+                    subscribe_component_set.add(componentThis)
+                }
+            }
+        }
+        //取消订阅注册
+        M.unSubReg=function (componentName,stateName){
+            //取消注册
+            if(stateName && M.Component[componentName]){
+                if( M._global_state_subscribe_component[stateName]){
+                    let  subscribe_component_set= M._global_state_subscribe_component[stateName]
+                    subscribe_component_set.delete(componentThis)
+                }
+            }
+            M.Component[componentName]=null;
+        }
+    }
+
 
     M.init();
+    M.initRedux();
     window.app = App;
     window.M = M;
     window.MIO = M.IO;
