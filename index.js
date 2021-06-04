@@ -1681,11 +1681,12 @@
             if(stateName){
                 if( !M._global_state_subscribe_component[stateName]){
                     let  subscribe_component_set=new Set();
-                    subscribe_component_set.add(componentThis);
-                    M._global_state_subscribe_component[stateName]=subscribe_component_set;
+                     //初始状态
+                     M._global_state[stateName]=initState;
+                     subscribe_component_set.add(componentThis);
+                     M._global_state_subscribe_component[stateName]=subscribe_component_set;
                 }else {
-                    //初始状态
-                    M._global_state[stateName]=initState;
+                
                     let  subscribe_component_set= M._global_state_subscribe_component[stateName]
                     subscribe_component_set.add(componentThis)
                 }
