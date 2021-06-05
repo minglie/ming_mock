@@ -1683,12 +1683,15 @@
                     let  subscribe_component_set=new Set();
                      //初始状态
                      M._global_state[stateName]=initState;
-                     subscribe_component_set.add(componentThis);
+                     if(componentThis){
+                        subscribe_component_set.add(componentThis);
+                     }
                      M._global_state_subscribe_component[stateName]=subscribe_component_set;
                 }else {
-                
                     let  subscribe_component_set= M._global_state_subscribe_component[stateName]
-                    subscribe_component_set.add(componentThis)
+                    if(componentThis){
+                        subscribe_component_set.add(componentThis)
+                    }
                 }
             }
         }
