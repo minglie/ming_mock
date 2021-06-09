@@ -7,7 +7,7 @@
  */
 (function (window, undefined) {
 
-    var M = {};
+    const M = {};
     //全局状态
     M._global_state = {}
     //订阅全局状态的组件
@@ -33,7 +33,7 @@
         }
     }
 
-    var App = {
+    const App = {
         reqMap: new Map(),
         resMap: new Map(),
 
@@ -98,9 +98,9 @@
                 }
             }
         },
-        async doget(pureUrl, options) {
-            req = {};
-            res = {};
+        async doGet(pureUrl, options) {
+            let req = {};
+            let res = {};
             res.alreadySend = false;
             req.params = App.reqMap.get("get:" + pureUrl);
             req.method = "get";
@@ -109,7 +109,7 @@
             res.send = function (d) {
                 res.alreadySend = true;
                 this.resMap.set("get:" + pureUrl, d);
-                data = App.resMap.get(options.type + ":" + pureUrl);
+                let data = App.resMap.get(options.type + ":" + pureUrl);
                 App._end(req, data);
                 options.success(data);
             }.bind(this);
@@ -117,9 +117,9 @@
             if (!res.alreadySend) await App.douse(req, res);
             if (!res.alreadySend) await App._get[pureUrl](req, res);
         },
-        async dopost(pureUrl, options) {
-            req = {};
-            res = {};
+        async doPost(pureUrl, options) {
+            let req = {};
+            let res = {};
             res.alreadySend = false;
             req.params = App.reqMap.get("post:" + pureUrl);
             req.method = "post";
@@ -128,7 +128,7 @@
             res.send = function (d) {
                 res.alreadySend = true;
                 this.resMap.set("post:" + pureUrl, d);
-                data = App.resMap.get(options.type + ":" + pureUrl);
+                let data = App.resMap.get(options.type + ":" + pureUrl);
                 App._end(req,data);
                 options.success(data);
             }.bind(this);
@@ -143,8 +143,8 @@
      * ----------------------其他工具函数START--------------------------------------------
      */
     M.sleep = function (numberMillis) {
-        var now = new Date();
-        var exitTime = now.getTime() + numberMillis;
+        let now = new Date();
+        let exitTime = now.getTime() + numberMillis;
         while (true) {
             now = new Date();
             if (now.getTime() > exitTime) {
@@ -189,7 +189,7 @@
 
 
     M.result = function (data, success) {
-        var r = {};
+        let r = {};
         if (success == false) {
             r.code = 3003;
             r.message = "操作失败";
@@ -200,7 +200,7 @@
             r.success = true;
         }
         try {
-            var obj = JSON.parse(data);
+            let obj = JSON.parse(data);
             if (typeof obj == 'object' && obj) {
                 r.data = obj;
             } else {
@@ -216,7 +216,7 @@
      *获取下划线式的对象
      */
     M.getUnderlineObj = function (obj) {
-        var result = {};
+        let result = {};
         for (let field in obj) {
             result[field.humpToUnderline()] = obj[field];
         }
@@ -227,7 +227,7 @@
      *获取驼峰式的对象
      */
     M.getHumpObj = function (obj) {
-        var result = {};
+        let result = {};
         for (let field in obj) {
             result[field.underlineToHump()] = obj[field];
         }
@@ -241,14 +241,14 @@
 
     M.urlStringify = function (obj) {
         if (obj !== null && typeof obj === 'object') {
-            var keys = Object.keys(obj);
-            var len = keys.length;
-            var flast = len - 1;
-            var fields = '';
-            for (var i = 0; i < len; ++i) {
-                var k = keys[i];
-                var v = obj[k];
-                var ks = k + "=";
+            let keys = Object.keys(obj);
+            let len = keys.length;
+            let flast = len - 1;
+            let fields = '';
+            for (let i = 0; i < len; ++i) {
+                let k = keys[i];
+                let v = obj[k];
+                let ks = k + "=";
                 fields += ks + v;
                 if (i < flast) {
                     fields += "&";
@@ -261,12 +261,12 @@
 
     M.urlParse = function (url) {
         url = url.substr(url.indexOf("?") + 1);
-        var t, n, r, i = url, s = {};
+        let t, n, r, i = url, s = {};
         t = i.split("&"),
             r = null,
             n = null;
-        for (var o in t) {
-            var u = t[o].indexOf("=");
+        for (let o in t) {
+            let u = t[o].indexOf("=");
             u !== -1 && (r = t[o].substr(0, u),
                 n = t[o].substr(u + 1),
                 s[r] = n);
@@ -302,7 +302,7 @@
     };
 
     M.fetchGet = function (url, callback, data) {
-        var getData = "";
+        let getData = "";
         if (data) {
             getData = M.urlStringify(data);
             if (url.indexOf("?") > 0) {
@@ -441,8 +441,8 @@
 
 
     M.getObjByFile = function (file) {
-        data = localStorage.getItem(file) || "[]";
-        var obj;
+        let data = localStorage.getItem(file) || "[]";
+        let obj;
         if (data) obj = JSON.parse(data.toString());
         return obj;
     };
@@ -452,7 +452,7 @@
 
     M.addObjToFile = function (file, obj) {
         try {
-            var d = M.getObjByFile(file);
+            let d = M.getObjByFile(file);
             M.writeObjToFile(file, [...d, obj]);
         } catch (e) {
             M.writeObjToFile(file, [obj]);
@@ -465,8 +465,8 @@
         } else {
             ids = id;
         }
-        var d = M.getObjByFile(file);
-        var d1 = M.getObjByFile(file);
+        let d = M.getObjByFile(file);
+        let d1 = M.getObjByFile(file);
         let d_num = 0;
         for (let i = 0; i < d1.length; i++) {
             if (ids.indexOf(d1[i].id) >= 0) {
@@ -481,8 +481,8 @@
     M.deleteObjByPropFile = function (file, o) {
         let o_key = Object.keys(o)[0];
         let o_val = o[o_key];
-        var d = M.getObjByFile(file);
-        var d1 = M.getObjByFile(file);
+        let d = M.getObjByFile(file);
+        let d1 = M.getObjByFile(file);
         let d_num = 0;
         for (let i = 0; i < d1.length; i++) {
             if (d1[i][o_key] == o_val) {
@@ -494,8 +494,8 @@
     };
 
     M.updateObjByIdFile = function (file, obj) {
-        var d = M.getObjByFile(file);
-        for (var i = 0; i < d.length; i++) {
+        let d = M.getObjByFile(file);
+        for (let i = 0; i < d.length; i++) {
             if (d[i].id == obj.id) {
                 d.splice(i, 1, obj);
                 break;
@@ -505,7 +505,7 @@
     };
 
     M.getObjByIdFile = function (file, id) {
-        var d = M.getObjByFile(file);
+        let d = M.getObjByFile(file);
         for (let i = 0; i < d.length; i++) {
             if (d[i].id == id) {
                 return d[i];
@@ -517,7 +517,7 @@
         let r_list = [];
         let o_key = Object.keys(o)[0];
         let o_val = o[o_key];
-        var d = M.getObjByFile(file);
+        let d = M.getObjByFile(file);
         for (let i = 0; i < d.length; i++) {
             if (d[i][o_key] == o_val) {
                 r_list.push(d[i]);
@@ -628,10 +628,10 @@
 
 
     M.fileDownload = function (content, filename) {
-        var eleLink = document.createElement('a');
+        let eleLink = document.createElement('a');
         eleLink.download = filename;
         eleLink.style.display = 'none';
-        var blob = new Blob([content]);
+        let blob = new Blob([content]);
         eleLink.href = URL.createObjectURL(blob);
         document.body.appendChild(eleLink);
         eleLink.click();
@@ -641,14 +641,14 @@
 
     //获取地址栏数据
     M.getParameter = function (name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-        var r = window.location.href.substr(window.location.href.indexOf('?')).substr(1).match(reg);
+        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        let r = window.location.href.substr(window.location.href.indexOf('?')).substr(1).match(reg);
         if (r != null) return unescape(r[2]);
         return null;
     };
     //说话函数
     M.speak = function (speakStr) {
-        var myAudio = document.createElement("AUDIO");
+        let myAudio = document.createElement("AUDIO");
         myAudio.src = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&spd=9&text=" + speakStr;
         myAudio.type = "audio/mpeg";
         myAudio.play();
@@ -657,7 +657,7 @@
      *改写ajax方法
      */
     M.ajax = function (options) {
-        d = M.urlParse(options.url);
+        let d = M.urlParse(options.url);
         options.data = Object.assign(d, options.data);
         if (options.type == "get") {
             if (!Object.keys(App._rest).length == 0) {
@@ -693,9 +693,9 @@
                 let pureUrl = options.restUrl || M.formatUrl(options.url);
                 App.reqMap.set(options.type + ":" + pureUrl, options.data);
                 if (options.type == "get") {
-                    App.doget(pureUrl, options);
+                    App.doGet(pureUrl, options);
                 } else {
-                    App.dopost(pureUrl, options);
+                    App.doPost(pureUrl, options);
                 }
                 return false;
             },
@@ -759,14 +759,14 @@
 
 
     M.Db = function (dbname) {
-        var Db = {};
+        let Db = {};
         Db.display_sql_enable = false;
 
         Db = openDatabase(dbname, '1.0', '', 2 * 1024 * 1024);
 
         Db.getInsertObjSql = function (tableName, obj) {
-            var fields = "(";
-            var values = "(";
+            let fields = "(";
+            let values = "(";
             for (let field in obj) {
                 fields += field + ",";
                 values += `'${obj[field]}'` + ",";
@@ -780,7 +780,7 @@
         };
 
         Db.getDeleteObjSql = function (tableName, obj) {
-            var fields = [];
+            let fields = [];
             for (let field in obj) {
                 fields.push(field);
             }
@@ -790,7 +790,7 @@
         };
 
         Db.getUpdateObjSql = function (tableName, obj, caseObj) {
-            var fields = [];
+            let fields = [];
             for (let field in obj) {
                 if (field != "id") {
                     fields.push(field);
@@ -800,7 +800,7 @@
             if (!caseObj) {
                 sql = `update ${tableName} set ${fields.map(u => u + "='" + obj[u] + "'")} where id=${obj.id}`;
             } else {
-                var caseObjfields = [];
+                let caseObjfields = [];
                 for (let caseObjfield in caseObj) {
                     caseObjfields.push(caseObjfield);
                 }
@@ -812,7 +812,7 @@
 
 
         Db.getSelectObjSql = function (tableName, obj) {
-            var fields = [];
+            let fields = [];
             for (let field in obj) {
                 fields.push(field);
             }
@@ -823,7 +823,7 @@
 
 
         Db.doSql = function (sql) {
-            var promise = new Promise(function (reslove, reject) {
+            let promise = new Promise(function (reslove, reject) {
                 Db.transaction(function (context) {
                     context.executeSql(sql, [], function (context, results) {
                         reslove(Array.from(results.rows));
@@ -847,8 +847,8 @@
          * 下划线命名转为驼峰命名
          */
         String.prototype.underlineToHump = function () {
-            var re = /_(\w)/g;
-            str = this.replace(re, function ($0, $1) {
+            let re = /_(\w)/g;
+            let str = this.replace(re, function ($0, $1) {
                 return $1.toUpperCase();
             });
             return str;
@@ -858,8 +858,8 @@
          * 驼峰命名转下划线
          */
         String.prototype.humpToUnderline = function () {
-            var re = /_(\w)/g;
-            str = this.replace(/([A-Z])/g, "_$1").toLowerCase();
+            let re = /_(\w)/g;
+            let str = this.replace(/([A-Z])/g, "_$1").toLowerCase();
             return str;
         };
 
@@ -877,7 +877,7 @@
         };
         //格式化日期
         Date.prototype.format = function (fmt) {
-            var o = {
+            let o = {
                 "M+": this.getMonth() + 1,                 //月份
                 "d+": this.getDate(),                    //日
                 "h+": this.getHours(),                   //小时
@@ -889,7 +889,7 @@
             if (/(y+)/.test(fmt)) {
                 fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
             }
-            for (var k in o) {
+            for (let k in o) {
                 if (new RegExp("(" + k + ")").test(fmt)) {
                     fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
                 }
@@ -899,7 +899,7 @@
     };
     M.initServer = function () {
         app.post("/add", (req, res) => {
-            r = M.add(req.params);
+            let r = M.add(req.params);
             res.send(M.result(r));
         });
 
@@ -914,22 +914,22 @@
         });
 
         app.get("/getById", (req, res) => {
-            r = M.getById(req.params.id);
+            let r = M.getById(req.params.id);
             res.send(M.result(r));
         });
 
         app.get("/listAll", (req, res) => {
-            r = M.listAll();
+            let r = M.listAll();
             res.send(M.result(r));
         });
 
         app.get("/listByParentId", (req, res) => {
-            r = M.listByProp({ parentId: req.params.parentId });
+            let r = M.listByProp({ parentId: req.params.parentId });
             res.send(M.result(r));
         });
 
         app.get("/listByPage", (req, res) => {
-            r = M.listByPage(req.params.startPage, req.params.limit);
+            let r = M.listByPage(req.params.startPage, req.params.limit);
             res.send(M.result(r));
         });
     };
@@ -950,20 +950,20 @@
      * 缓存start
      */
     M.getRelativePath = function (url, level) {
-        var urlarray = url.split("/");
-        var resulturl = "";
-        for (var i = 0; i < urlarray.length - level; i++) {
-            resulturl += urlarray[i] + "/";
+        let urlArray = url.split("/");
+        let resultUrl = "";
+        for (let i = 0; i < urlArray.length - level; i++) {
+            resultUrl += urlArray[i] + "/";
         }
-        return resulturl;
+        return resultUrl;
     };
     M.cache = {
         pageVersion: "0.0.1", //页面版本，也由页面输出，用于刷新localStorage缓存
         //动态加载js文件并缓存
         loadJs: function (name, url, callback) {
             if (window.localStorage) {
-                var xhr;
-                var js = localStorage.getItem(name);
+                let xhr;
+                let js = localStorage.getItem(name);
                 if (js == null || js.length == 0 || this.pageVersion != localStorage.getItem("version")) {
                     if (window.ActiveXObject) {
                         xhr = new ActiveXObject("Microsoft.XMLHTTP");
@@ -998,8 +998,8 @@
         },
         loadCss: function (name, url) {
             if (window.localStorage) {
-                var xhr;
-                var css = localStorage.getItem(name);
+                let xhr;
+                let css = localStorage.getItem(name);
                 if (css == null || css.length == 0 || this.pageVersion != localStorage.getItem("version")) {
                     if (window.ActiveXObject) {
                         xhr = new ActiveXObject("Microsoft.XMLHTTP");
@@ -1030,32 +1030,32 @@
         },
         //往页面写入js脚本
         writeJs: function (text) {
-            var head = document.getElementsByTagName('HEAD').item(0);
-            var link = document.createElement("script");
+            let head = document.getElementsByTagName('HEAD').item(0);
+            let link = document.createElement("script");
             link.type = "text/javascript";
             link.innerHTML = text;
             head.appendChild(link);
         },
         //往页面写入css样式
         writeCss: function (text) {
-            var head = document.getElementsByTagName('HEAD').item(0);
-            var link = document.createElement("style");
+            let head = document.getElementsByTagName('HEAD').item(0);
+            let link = document.createElement("style");
             link.type = "text/css";
             link.innerHTML = text;
             head.appendChild(link);
         },
         //往页面引入js脚本
         linkJs: function (url) {
-            var head = document.getElementsByTagName('HEAD').item(0);
-            var link = document.createElement("script");
+            let head = document.getElementsByTagName('HEAD').item(0);
+            let link = document.createElement("script");
             link.type = "text/javascript";
             link.src = url;
             head.appendChild(link);
         },
         //往页面引入css样式
         linkCss: function (url) {
-            var head = document.getElementsByTagName('HEAD').item(0);
-            var link = document.createElement("link");
+            let head = document.getElementsByTagName('HEAD').item(0);
+            let link = document.createElement("link");
             link.type = "text/css";
             link.rel = "stylesheet";
             link.rev = "stylesheet";
@@ -1072,9 +1072,9 @@
     *  ajax 拦截 start
     */
     M.ajaxInterceptor = function () {
-        var Util = {};
+        let Util = {};
         Util.extend = function extend() {
-            var target = arguments[0] || {},
+            let target = arguments[0] || {},
                 i = 1,
                 length = arguments.length,
                 options, name, src, copy, clone;
@@ -1110,7 +1110,7 @@
         };
 
         Util.each = function each(obj, iterator, context) {
-            var i, key;
+            let i, key;
             if (this.type(obj) === 'number') {
                 for (i = 0; i < obj; i++) {
                     iterator(i, i);
@@ -1145,15 +1145,15 @@
         };
 
         Util.keys = function (obj) {
-            var keys = [];
-            for (var key in obj) {
+            let keys = [];
+            for (let key in obj) {
                 if (obj.hasOwnProperty(key)) keys.push(key);
             }
             return keys;
         };
         Util.values = function (obj) {
-            var values = [];
-            for (var key in obj) {
+            let values = [];
+            for (let key in obj) {
                 if (obj.hasOwnProperty(key)) values.push(obj[key]);
             }
             return values;
@@ -1170,13 +1170,13 @@
             new window.Event('custom');
         } catch (exception) {
             window.Event = function (type, bubbles, cancelable, detail) {
-                var event = document.createEvent('CustomEvent');
+                let event = document.createEvent('CustomEvent');
                 event.initCustomEvent(type, bubbles, cancelable, detail);
                 return event
             }
         }
 
-        var XHR_STATES = {
+        let XHR_STATES = {
             // The object has been constructed.
             UNSENT: 0,
             // The open() method has been successfully invoked.
@@ -1189,12 +1189,12 @@
             DONE: 4
         };
 
-        var XHR_EVENTS = 'readystatechange loadstart progress abort error load timeout loadend'.split(' ');
-        var XHR_REQUEST_PROPERTIES = 'timeout withCredentials'.split(' ');
-        var XHR_RESPONSE_PROPERTIES = 'readyState responseURL status statusText responseType response responseText responseXML'.split(' ');
+        let XHR_EVENTS = 'readystatechange loadstart progress abort error load timeout loadend'.split(' ');
+        let XHR_REQUEST_PROPERTIES = 'timeout withCredentials'.split(' ');
+        let XHR_RESPONSE_PROPERTIES = 'readyState responseURL status statusText responseType response responseText responseXML'.split(' ');
 
         // https://github.com/trek/FakeXMLHttpRequest/blob/master/fake_xml_http_request.js#L32
-        var HTTP_STATUS_CODES = {
+        let HTTP_STATUS_CODES = {
             100: "Continue",
             101: "Switching Protocols",
             200: "OK",
@@ -1267,7 +1267,7 @@
         // 初始化 Request 相关的属性和方法
         Util.extend(MockXMLHttpRequest.prototype, {
             open: function (method, url, async, username, password) {
-                var that = this;
+                let that = this;
                 Util.extend(this.custom, {
                     method: method,
                     url: url,
@@ -1283,18 +1283,18 @@
                     if (typeof timeout === 'number') return timeout;
                     if (typeof timeout === 'string' && !~timeout.indexOf('-')) return parseInt(timeout, 10);
                     if (typeof timeout === 'string' && ~timeout.indexOf('-')) {
-                        var tmp = timeout.split('-');
-                        var min = parseInt(tmp[0], 10);
-                        var max = parseInt(tmp[1], 10);
+                        let tmp = timeout.split('-');
+                        let min = parseInt(tmp[0], 10);
+                        let max = parseInt(tmp[1], 10);
                         return Math.round(Math.random() * (max - min)) + min;
                     }
                 }(MockXMLHttpRequest._settings.timeout);
 
                 // 查找与请求参数匹配的数据模板
-                var item = find(this.custom.options);
+                let item = find(this.custom.options);
                 function handle(event) {
                     // 同步属性 NativeXMLHttpRequest => MockXMLHttpRequest
-                    for (var i = 0; i < XHR_RESPONSE_PROPERTIES.length; i++) {
+                    for (let i = 0; i < XHR_RESPONSE_PROPERTIES.length; i++) {
                         try {
                             that[XHR_RESPONSE_PROPERTIES[i]] = xhr[XHR_RESPONSE_PROPERTIES[i]];
                         } catch (e) { }
@@ -1307,11 +1307,11 @@
                 if (!item || M.ajaxInterceptorStatus == false) {
                     this.match = false;
                     // 创建原生 XHR 对象，调用原生 open()，监听所有原生事件
-                    var xhr = createNativeXMLHttpRequest();
+                    let xhr = createNativeXMLHttpRequest();
                     this.custom.xhr = xhr;
 
                     // 初始化所有事件，用于监听原生 XHR 对象的事件
-                    for (var i = 0; i < XHR_EVENTS.length; i++) {
+                    for (let i = 0; i < XHR_EVENTS.length; i++) {
                         xhr.addEventListener(XHR_EVENTS[i], handle);
                     }
 
@@ -1320,7 +1320,7 @@
                     else xhr.open(method, url, async);
 
                     // 同步属性 MockXMLHttpRequest => NativeXMLHttpRequest
-                    for (var j = 0; j < XHR_REQUEST_PROPERTIES.length; j++) {
+                    for (let j = 0; j < XHR_REQUEST_PROPERTIES.length; j++) {
                         try {
                             xhr[XHR_REQUEST_PROPERTIES[j]] = that[XHR_REQUEST_PROPERTIES[j]];
                         } catch (e) { }
@@ -1345,7 +1345,7 @@
                 }
 
                 // 拦截 XHR
-                var requestHeaders = this.custom.requestHeaders;
+                let requestHeaders = this.custom.requestHeaders;
                 if (requestHeaders[name]) requestHeaders[name] += ',' + value;
                 else requestHeaders[name] = value;
             },
@@ -1355,7 +1355,7 @@
             // https://xhr.spec.whatwg.org/#the-send()-method
             // Initiates the request.
             send: function send(data) {
-                var that = this;
+                let that = this;
                 this.custom.options.body = data;
                 if (M.beforeSend(this.custom.options) == false) {
                     return;
@@ -1438,9 +1438,9 @@
                 }
 
                 // 拦截 XHR
-                var responseHeaders = this.custom.responseHeaders;
-                var headers = '';
-                for (var h in responseHeaders) {
+                let responseHeaders = this.custom.responseHeaders;
+                let headers = '';
+                for (let h in responseHeaders) {
                     if (!responseHeaders.hasOwnProperty(h)) continue;
                     headers += h + ': ' + responseHeaders[h] + '\r\n';
                 }
@@ -1456,35 +1456,35 @@
         // EventTarget
         Util.extend(MockXMLHttpRequest.prototype, {
             addEventListener: function addEventListener(type, handle) {
-                var events = this.custom.events;
+                let events = this.custom.events;
                 if (!events[type]) events[type] = [];
                 events[type].push(handle);
             },
             removeEventListener: function removeEventListener(type, handle) {
-                var handles = this.custom.events[type] || [];
-                for (var i = 0; i < handles.length; i++) {
+                let handles = this.custom.events[type] || [];
+                for (let i = 0; i < handles.length; i++) {
                     if (handles[i] === handle) {
                         handles.splice(i--, 1);
                     }
                 }
             },
             dispatchEvent: function dispatchEvent(event) {
-                var handles = this.custom.events[event.type] || [];
-                for (var i = 0; i < handles.length; i++) {
+                let handles = this.custom.events[event.type] || [];
+                for (let i = 0; i < handles.length; i++) {
                     handles[i].call(this, event);
                 };
-                var ontype = 'on' + event.type;
+                let ontype = 'on' + event.type;
                 if (this[ontype]) this[ontype](event);
             }
         });
 
         // Inspired by jQuery
         function createNativeXMLHttpRequest() {
-            var isLocal = function () {
-                var rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
-                var rurl = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/;
-                var ajaxLocation = location.href;
-                var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || [];
+            const isLocal = function () {
+                let rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
+                let rurl = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/;
+                let ajaxLocation = location.href;
+                let ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || [];
                 return rlocalProtocol.test(ajaxLocParts[1]);
             }();
 
@@ -1575,7 +1575,7 @@
                 const stream = new ReadableStream({
                     start(controller) {
                         const bufView = new Uint8Array(new ArrayBuffer(txt.length));
-                        for (var i = 0; i < txt.length; i++) {
+                        for (let i = 0; i < txt.length; i++) {
                             bufView[i] = txt.charCodeAt(i);
                         };
                         controller.enqueue(bufView);
@@ -1698,8 +1698,11 @@
             if(stateName && M.Component[componentName]){
                 if( M._global_state_subscribe_component[stateName]){
                     let  subscribe_component_set= M._global_state_subscribe_component[stateName]
-                    subscribe_component_set.delete(componentThis)
+                    subscribe_component_set.delete(M.Component[componentName])
                 }
+            }
+            if(!componentName && stateName ){
+                M._global_state_subscribe_component[stateName]=null
             }
             M.Component[componentName]=null;
         }
