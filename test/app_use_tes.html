@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../index.js"></script>
+</head>
+<body>
+
+<button id="bt1">测试get</button>
+<button id="bt2">测试rest</button>
+
+<button id="bt3">添加</button>
+<button id="bt4">查看</button>
+
+<button id="bt5">M.require</button>
+
+<script>
+      app.get("/t1", (req,res)=>{
+            console.log(req.params)
+           setTimeout(()=>res.send("###"),2000)
+      })
+
+      app.get("/t2/:id/name",async (req,res)=>{
+            console.log(req.params)
+            res.send(Promise.resolve(req.params.id))
+      })
+
+      app.post("addUser",async (req,res)=>{
+            console.log(req.params)
+            M.add({name:req.params.name})
+            res.send("add success")
+      })
+
+      app.get("listByPage",async (req,res)=>{
+            console.log(req.params)
+            res.send(M.listAll())
+      })
+
+
+      bt1.onclick=function(){
+         M.get("/t1?ss=77").then(d=>console.log(" bt1.onclick",d))
+       
+      }
+
+      bt2.onclick=function(){
+        M.get("/t2/5/zs?ss=7").then(d=>console.log("bt2.onclick",d+1))
+      }
+
+      a=0;
+      bt3.onclick=function(){
+        a++;
+        MIO.addUser({name:"zs"+a}).then(d=>console.log("bt3.onclick",d+1))
+      }
+
+      bt4.onclick=function(){
+        MIO.listByPage({}).then(d=>console.log("bt4.onclick",d))
+      }
+
+
+      bt5.onclick=function(){
+           M.require("https://minglie.github.io/json/minglie.json").then(d=>console.log(d)).catch((error) => {
+                console.log(error)
+            });
+
+      }
+
+</script>
+
+    
+</body>
+</html>
