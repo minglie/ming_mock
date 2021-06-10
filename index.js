@@ -8,6 +8,7 @@
 (function (window, undefined) {
 
     const M = {};
+    M.cache_req_data_enable=false;
     //全局状态
     M._global_state = {}
     //订阅全局状态的组件
@@ -90,7 +91,7 @@
             url = M.formatUrl(url);
             App._post[url] = callback;
         },
-        async douse(req, res) {
+        async doUse(req, res) {
             for (let key in App._use){
                 if(App._use[key].regExp.test(req.url)){
                    await  App._use[key].callback(req,res);
@@ -102,38 +103,42 @@
             let req = {};
             let res = {};
             res.alreadySend = false;
-            req.params = App.reqMap.get("get:" + pureUrl);
+            req.params =options.params;
             req.method = "get";
             req.pureUrl = pureUrl;
             req.url = options.url;
             res.send = function (d) {
                 res.alreadySend = true;
-                this.resMap.set("get:" + pureUrl, d);
-                let data = App.resMap.get(options.type + ":" + pureUrl);
+                if(M.cache_req_data_enable){
+                    this.resMap.set("get:" + pureUrl, d);
+                }
+                let data = d;
                 App._end(req, data);
                 options.success(data);
             }.bind(this);
             await App._begin(req, res);
-            if (!res.alreadySend) await App.douse(req, res);
+            if (!res.alreadySend) await App.doUse(req, res);
             if (!res.alreadySend) await App._get[pureUrl](req, res);
         },
         async doPost(pureUrl, options) {
             let req = {};
             let res = {};
             res.alreadySend = false;
-            req.params = App.reqMap.get("post:" + pureUrl);
+            req.params =options.params;
             req.method = "post";
             req.pureUrl = pureUrl;
             req.url = options.url;
             res.send = function (d) {
                 res.alreadySend = true;
-                this.resMap.set("post:" + pureUrl, d);
-                let data = App.resMap.get(options.type + ":" + pureUrl);
+                if(M.cache_req_data_enable){
+                    this.resMap.set("post:" + pureUrl, d);
+                }
+                let data = d;
                 App._end(req,data);
                 options.success(data);
             }.bind(this);
             await App._begin(req, res);
-            if (!res.alreadySend) await App.douse(req, res);
+            if (!res.alreadySend) await App.doUse(req, res);
             if (!res.alreadySend) await App._post[pureUrl](req, res);
         }
     };
@@ -691,7 +696,10 @@
             url: options.url,
             beforeSend(XHR) {
                 let pureUrl = options.restUrl || M.formatUrl(options.url);
-                App.reqMap.set(options.type + ":" + pureUrl, options.data);
+                if(M.cache_req_data_enable){
+                    App.reqMap.set(options.type + ":" + pureUrl, options.data);
+                }
+                options.params=options.data;
                 if (options.type == "get") {
                     App.doGet(pureUrl, options);
                 } else {
