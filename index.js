@@ -196,13 +196,11 @@
     M.result = function (data, success) {
         let r = {};
         if (success == false) {
-            r.code = 3003;
-            r.message = "操作失败";
-            r.success = success;
+            r.code = -2;
+            r.msg = "操作失败";
         } else {
-            r.code = 3002;
-            r.message = "操作成功";
-            r.success = true;
+            r.code = 200;
+            r.msg = "success";
         }
         try {
             let obj = JSON.parse(data);
