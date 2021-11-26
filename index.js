@@ -1668,6 +1668,68 @@
     }
 
 
+    const translateApi=(api)=>{
+        let url=M.config?M.config.baseUrl(api):"" ;
+        if(!api.startsWith("http")){
+            api=url
+        }
+        return api;
+    }
+
+    const request= async function ({methed,api,params,headers}){
+        api=translateApi(api)
+        // alert(api)
+        return new Promise((reslove, reject) => {
+            fetch(api, {
+                method: methed,
+                mode: 'cors',
+                headers: headers||{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            }).then(function (response) {
+                return response.json();
+            }).then((res) => {
+                reslove(res)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
+
+    const post  = async (api, params = {},headers) => request({methed:"POST",api,params,headers})
+    const del  = async (api, params = {},headers) => request({methed:"DELETE",api,params,headers})
+    const put  = async (api, params = {},headers) => request({methed:"PUT",api,params,headers})
+    const get = async (api, params = {},headers) => {
+        api=translateApi(api)
+        let getData = "";
+        if (params) {
+            getData = window.M.urlStringify(params);
+            if (api.indexOf("?") > 0) {
+                getData = "&" + getData;
+            } else {
+                getData = "?" + getData;
+            }
+        }
+        api = api + getData;
+        return new Promise((reslove, reject) => {
+            fetch(api, {
+                method: 'GET',
+                mode: 'cors',
+                headers: headers||{
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (response) {
+                return response.json();
+            }).then((res) => {
+                reslove(res)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    };
+
+
     /**
      *  ajax 拦截 end
      */
@@ -1737,6 +1799,12 @@
     window.app = App;
     window.M = M;
     window.MIO = M.IO;
+    window.M.request={}
+    window.M.request.get=get;
+    window.M.request.post=post;
+    window.M.request.delete=del;
+    window.M.request.put=put;
+
     //$.ajax = M.ajax;
     if (M.init_server_enable) M.initServer();
 
