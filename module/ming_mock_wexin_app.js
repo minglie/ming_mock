@@ -1,5 +1,5 @@
 const config={
-    appletName："",
+    appletName:"",
     DOMAIN:""
 }
 
