@@ -424,7 +424,8 @@
 
     M.getFileNameByUrl=function (url){
         let split= url.split("/");
-        return split[split.length-1]
+        let fileName= split[split.length-1].split("?")[0]
+        return fileName;
     }
 
     M.require =async function (url) {
@@ -435,7 +436,6 @@
                     mode: 'cors'
                 }
             ).then((res) => {
-                let url1 = M.formatUrl(url).split("/");
                 return res.text();
             }).then(
                 d => {
@@ -1781,6 +1781,23 @@
             });
         })
     };
+    const jsonp=async (url, callbackFunction)=>{
+        return new Promise(resolve => {
+            let callbackStr = M.urlParse(url).callback;
+            window[callbackStr]=(...params)=>{
+                if(callbackFunction) {
+                    callbackFunction(params);
+                }
+                document.body.removeChild(document.getElementById("ming_mock_jsonp_id"))
+                resolve(params);
+            }
+            var scriptElement = document.createElement('script');
+            scriptElement.src = url;
+            scriptElement.id="ming_mock_jsonp_id"
+            document.body.appendChild(scriptElement);
+        })
+    };
+
 
 
     /**
@@ -1857,6 +1874,7 @@
     window.M.request.post=post;
     window.M.request.delete=del;
     window.M.request.put=put;
+    window.M.request.jsonp=jsonp;
 
     //$.ajax = M.ajax;
     if (M.init_server_enable) M.initServer();
