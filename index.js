@@ -15,7 +15,7 @@
     M._global_state_subscribe_component = {}
     //全局组件
     M.Component={}
-    M.init_server_enable = true;
+    M.init_server_enable = false;
     M.host = "";
     M.map_path = "map_path";
     M.database_path = "database_path";
