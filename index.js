@@ -113,12 +113,14 @@
                 return
             }
             M._globle_plugin_url_cacheMap[pluginUrl]=pluginUrl;
-            import(pluginUrl).then(async modul=>{
-                const Plugin= modul.default;
-                const plugin= new Plugin(constructorParams);
-                App.use(plugin,pluginParams)
+            return  new Promise(resolve => {
+                import(pluginUrl).then(async modul=>{
+                    const Plugin= modul.default;
+                    const plugin= new Plugin(constructorParams);
+                    App.use(plugin,pluginParams)
+                })
+                resolve(plugin);
             })
-            return App;
         },
         /**
          * 注册get方法
