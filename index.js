@@ -3,7 +3,7 @@
  * By : Minglie
  * QQ: 934031452
  * Date :2021.12.04
- * version :2.2.2
+ * version :2.3.0
  */
 (function (window, undefined) {
 
