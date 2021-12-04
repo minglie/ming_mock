@@ -118,8 +118,9 @@
                     const Plugin= modul.default;
                     const plugin= new Plugin(constructorParams);
                     App.use(plugin,pluginParams)
+                    resolve(plugin);
                 })
-                resolve(plugin);
+
             })
         },
         /**
