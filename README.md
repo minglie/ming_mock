@@ -11,7 +11,7 @@ https://www.yuque.com/docs/share/e1f16015-0719-4ffd-9464-a35610389153?#
 
 
 # cdn
-https://unpkg.com/ming_mock@1.9.7/index.js
+https://unpkg.com/ming_mock/index.js
 
 # 压缩cdn
 https://unpkg.com/ming_mock@1.9.7/dist/ming_mock.min.js
@@ -201,6 +201,17 @@ export  {MIO}
 
  https://github.com/minglie/minglie.github.io/blob/master/Snippets/manager/server.js
 
+
+
+# 插件机制
+https://www.yuque.com/docs/share/90bc5474-2120-4081-9ed7-c7edae5fde36?#tlwhZ
+```js
+   app.installPlugin("http://localhost:4444/OssWebApi.js",{
+        name:"我是插件构造方法参数"
+    },{
+        name:"我是插件构造方法附加参数"
+    });
+```
 
 ### 访问mysql,需要启动一个服务,用ming_node搭建,ming_node也是express风格,是单个文件且无依赖
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../index.js"></script>
+</head>
+<body>
+
+<button id="bt1">测试get</button>
+<button id="bt2">测试rest</button>
+
+<button id="bt3">添加</button>
+<button id="bt4">查看</button>
+
+<button id="bt5">M.require</button>
+
+<script>
+    app.installPlugin("http://localhost:4444/OssWebApi.js",{
+        name:"我是插件构造方法参数"
+    },{
+        name:"我是插件构造方法附加参数"
+    });
+
+</script>
+
+    
+</body>
+</html>

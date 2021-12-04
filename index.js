@@ -19,6 +19,31 @@
     M.host = "";
     M.map_path = "map_path";
     M.database_path = "database_path";
+    //全局缓存map
+    M._globle_cacheMap = {}
+    //全局对象缓存
+    M._globle_lib_cacheMap={}
+    //全局插件地址缓存
+    M._globle_plugin_url_cacheMap={};
+    //全局插件
+    M._globle_plugin=new Set();
+
+    M.import=async function (url,callback){
+        if(M._globle_lib_cacheMap[url]){
+            return M._globle_lib_cacheMap[url];
+        }
+        if(!callback){
+            let r=await  M.require(url)
+            r= eval(r)
+            M._globle_lib_cacheMap[url]=r;
+            return r
+        }else {
+            let r= callback()
+            M._globle_lib_cacheMap[url]=r;
+            return r
+        }
+
+    }
 
     if (typeof module === "object" && typeof module.exports === "object") {
         try {
@@ -57,15 +82,43 @@
             App._end = callback;
         },
         use(url,callback){
-            if (Array.isArray(url)) {
-                url.forEach(u=>{
-                    let regExp=new RegExp(u)
-                    App._use[u] = {url,regExp,callback};
-                })
-            } else {
-                let regExp=new RegExp(url)
-                App._use[url] = {url,regExp,callback};
+            if(typeof url === 'function' || typeof url === 'object'  ){
+                let plugin=url;
+                let args=callback;
+                if(plugin.installed){
+                    return App;
+                }
+                if (typeof plugin === 'function') {
+                    plugin(App, args);
+                } else {
+                    plugin.install(App, args);
+                }
+                plugin.installed = true;
+                M._globle_plugin.add(plugin);
+            }else {
+                if (Array.isArray(url)) {
+                    url.forEach(u=>{
+                        let regExp=new RegExp(u)
+                        App._use[u] = {url,regExp,callback};
+                    })
+                } else {
+                    let regExp=new RegExp(url)
+                    App._use[url] = {url,regExp,callback};
+                }
             }
+            return App;
+        },
+        async installPlugin(pluginUrl,constructorParams,pluginParams){
+            if(M._globle_plugin_url_cacheMap[pluginUrl]){
+                return
+            }
+            M._globle_plugin_url_cacheMap[pluginUrl]=pluginUrl;
+            import(pluginUrl).then(async modul=>{
+                const Plugin= modul.default;
+                const plugin= new Plugin(constructorParams);
+                App.use(plugin,pluginParams)
+            })
+            return App;
         },
         /**
          * 注册get方法
@@ -361,8 +414,13 @@
         });
     };
 
+    M.getFileNameByUrl=function (url){
+        let split= url.split("/");
+        return split[split.length-1]
+    }
 
-    M.require = function (url) {
+    M.require =async function (url) {
+        let fileName=M.getFileNameByUrl(url);
         let promise = new Promise(function (reslove, reject) {
             fetch(url, {
                 method: 'GET',
@@ -370,19 +428,14 @@
             }
             ).then((res) => {
                 let url1 = M.formatUrl(url).split("/");
-                url1 = url1[url1.length - 2];
                 return res.text();
             }).then(
                 d => {
                     let r = "";
-                    try {
-                        r = JSON.parse(d);
-                    } catch (e) {
-                        try {
-                            r = eval(d);
-                        } catch (e1) {
-                            r = d;
-                        }
+                    if(fileName.endsWith(".js")){
+                        r= eval(d);
+                    }else {
+                        r = JSON.parse(d)
                     }
                     reslove(r);
                 }).catch((error) => {
