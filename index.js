@@ -140,15 +140,23 @@
          * 注册post方法
          */
         post(url, callback) {
-            M.IO.reg(url.replace("/", ""), "post");
+            //非rest请求在M.IO上注册一个方法
+            if (!url.includes(":")) {
+                M.IO.reg(url.replace("/", ""), "post");
+            }
             url = M.formatUrl(url);
+            let realUrl = url;
+            if (url.indexOf(":") > 0) {
+                url = url.substr(0, url.indexOf(":"));
+                App._rest[url] = realUrl;
+            }
             App._post[url] = callback;
         },
         async doUse(req, res) {
             for (let key in App._use){
                 if(App._use[key].regExp.test(req.url)){
-                   await  App._use[key].callback(req,res);
-                   return;
+                    await  App._use[key].callback(req,res);
+                    return;
                 }
             }
         },
@@ -369,9 +377,9 @@
         }
         url = M.host + url + getData;
         fetch(url, {
-            method: 'GET',
-            mode: 'cors'
-        }
+                method: 'GET',
+                mode: 'cors'
+            }
         ).then((res) => {
             return res.json();
         }).then((res) => callback(res)).catch((error) => {
@@ -423,9 +431,9 @@
         let fileName=M.getFileNameByUrl(url);
         let promise = new Promise(function (reslove, reject) {
             fetch(url, {
-                method: 'GET',
-                mode: 'cors'
-            }
+                    method: 'GET',
+                    mode: 'cors'
+                }
             ).then((res) => {
                 let url1 = M.formatUrl(url).split("/");
                 return res.text();
@@ -439,8 +447,8 @@
                     }
                     reslove(r);
                 }).catch((error) => {
-                    reject(error);
-                });
+                reject(error);
+            });
         });
         return promise;
     };
@@ -715,7 +723,7 @@
     M.ajax = function (options) {
         let d = M.urlParse(options.url);
         options.data = Object.assign(d, options.data);
-        if (options.type == "get") {
+        if (true) {
             if (!Object.keys(App._rest).length == 0) {
                 let pathname = M.formatUrl(options.url);
                 let realPathName = pathname;
@@ -1128,8 +1136,8 @@
    */
 
     /**
-    *  ajax 拦截 start
-    */
+     *  ajax 拦截 start
+     */
     M.ajaxInterceptor = function () {
         let Util = {};
         Util.extend = function extend() {
@@ -1568,6 +1576,12 @@
             let formatUrl = M.formatUrl(path);
             options.path = path;
             options.formatUrl = formatUrl;
+            //rest 判断
+            for (let i = 0; i < Object.keys(App._rest).length; i++) {
+                if (formatUrl.startsWith(Object.keys(App._rest)[i])) {
+                    return true;
+                }
+            }
             if (options.type == "POST") {
                 if (Object.keys(app._post).indexOf(formatUrl) > -1) {
                     return true;
@@ -1700,16 +1714,78 @@
     };
 
     M.getComponentName=function(componentName){
-       let funStr=componentName._reactInternalFiber.type.toString();
-       let re = /function\s*(\w*)/i;
-       let matches = re.exec(funStr);
-       return matches[1];
+        let funStr=componentName._reactInternalFiber.type.toString();
+        let re = /function\s*(\w*)/i;
+        let matches = re.exec(funStr);
+        return matches[1];
     }
 
 
+    const translateApi=(api)=>{
+        let url=M.config?M.config.baseUrl(api):"" ;
+        if(!api.startsWith("http")){
+            api=url
+        }
+        return api;
+    }
+
+    const request= async function ({methed,api,params,headers}){
+        api=translateApi(api)
+        // alert(api)
+        return new Promise((reslove, reject) => {
+            fetch(api, {
+                method: methed,
+                mode: 'cors',
+                headers: headers||{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            }).then(function (response) {
+                return response.json();
+            }).then((res) => {
+                reslove(res)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
+
+    const post  = async (api, params = {},headers) => request({methed:"POST",api,params,headers})
+    const del  = async (api, params = {},headers) => request({methed:"DELETE",api,params,headers})
+    const put  = async (api, params = {},headers) => request({methed:"PUT",api,params,headers})
+    const get = async (api, params = {},headers) => {
+        api=translateApi(api)
+        let getData = "";
+        if (params) {
+            getData = window.M.urlStringify(params);
+            if (api.indexOf("?") > 0) {
+                getData = "&" + getData;
+            } else {
+                getData = "?" + getData;
+            }
+        }
+        api = api + getData;
+        return new Promise((reslove, reject) => {
+            fetch(api, {
+                method: 'GET',
+                mode: 'cors',
+                headers: headers||{
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (response) {
+                return response.json();
+            }).then((res) => {
+                reslove(res)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    };
+
+
     /**
-    *  ajax 拦截 end
-    */
+     *  ajax 拦截 end
+     */
     M.initRedux=function(){
         let handler = {
             get (target, key, receiver) {
@@ -1740,12 +1816,12 @@
             if(stateName){
                 if( !M._global_state_subscribe_component[stateName]){
                     let  subscribe_component_set=new Set();
-                     //初始状态
-                     M._global_state[stateName]=initState;
-                     if(componentThis){
+                    //初始状态
+                    M._global_state[stateName]=initState;
+                    if(componentThis){
                         subscribe_component_set.add(componentThis);
-                     }
-                     M._global_state_subscribe_component[stateName]=subscribe_component_set;
+                    }
+                    M._global_state_subscribe_component[stateName]=subscribe_component_set;
                 }else {
                     let  subscribe_component_set= M._global_state_subscribe_component[stateName]
                     if(componentThis){
@@ -1776,6 +1852,12 @@
     window.app = App;
     window.M = M;
     window.MIO = M.IO;
+    window.M.request={}
+    window.M.request.get=get;
+    window.M.request.post=post;
+    window.M.request.delete=del;
+    window.M.request.put=put;
+
     //$.ajax = M.ajax;
     if (M.init_server_enable) M.initServer();
 
