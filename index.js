@@ -1135,15 +1135,18 @@
             head.appendChild(link);
         },
         //往页面引入js脚本
-        linkJs: function (url) {
+        linkJs: function (url,id) {
             let head = document.getElementsByTagName('HEAD').item(0);
             let link = document.createElement("script");
             link.type = "text/javascript";
             link.src = url;
+            if(id){
+              link.id=id;
+            }
             head.appendChild(link);
         },
         //往页面引入css样式
-        linkCss: function (url) {
+        linkCss: function (url,id) {
             let head = document.getElementsByTagName('HEAD').item(0);
             let link = document.createElement("link");
             link.type = "text/css";
@@ -1151,6 +1154,9 @@
             link.rev = "stylesheet";
             link.media = "screen";
             link.href = url;
+            if(id){
+                link.id=id;
+            }
             head.appendChild(link);
         }
     };
