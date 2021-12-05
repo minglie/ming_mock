@@ -203,7 +203,7 @@ export  {MIO}
 
 
 
-# 插件机制
+# 插件
 https://www.yuque.com/docs/share/90bc5474-2120-4081-9ed7-c7edae5fde36?#tlwhZ
 ```js
    app.installPlugin("http://localhost:4444/OssWebApi.js",{
