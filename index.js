@@ -2,8 +2,8 @@
  * File : M_mock.js
  * By : Minglie
  * QQ: 934031452
- * Date :2021.12.04
- * version :2.3.0
+ * Date :2021.12.05
+ * version :2.4.0
  */
 (function (window, undefined) {
 
@@ -44,6 +44,17 @@
         }
 
     }
+
+    M.getGloblePlugin=(pluginKey)=>{
+        let plugin=null;
+        M._globle_plugin.forEach(u=>{
+            if(u.key==pluginKey){
+                plugin=u;
+            }
+        })
+        return plugin;
+    }
+
 
     if (typeof module === "object" && typeof module.exports === "object") {
         try {
@@ -123,6 +134,7 @@
 
             })
         },
+
         /**
          * 注册get方法
          */
@@ -221,6 +233,14 @@
             }
         }
     };
+
+    M.delayMs=async function (ms){
+        return new Promise(r=>{
+            setTimeout(()=>{
+                r(1)
+            },ms)
+        })
+    }
 
     /**
      * ----------------------服务器端START--------------------------------------------
@@ -1135,8 +1155,8 @@
         }
     };
     /**
-   * 缓存end
-   */
+     * 缓存end
+     */
 
     /**
      *  ajax 拦截 start
