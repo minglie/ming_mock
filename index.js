@@ -28,6 +28,7 @@
     //全局插件
     M._globle_plugin=new Set();
 
+    //优先使用window.import("")
     M.import=async function (url,callback){
         if(M._globle_lib_cacheMap[url]){
             return M._globle_lib_cacheMap[url];
