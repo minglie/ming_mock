@@ -1752,7 +1752,7 @@
 
 
     const translateApi=(api)=>{
-        let url=M.config?M.config.baseUrl(api):"" ;
+        let url=M.config?M.config.baseUrl(api):api ;
         if(!api.startsWith("http")){
             api=url
         }
