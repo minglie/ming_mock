@@ -746,7 +746,9 @@
      */
     M.ajax = function (options) {
         let d = M.urlParse(options.url);
-        options.data = Object.assign(d, options.data);
+        if(Object.keys(d).length>0){
+            options.data = Object.assign(d,options.data);
+        }
         if (true) {
             if (!Object.keys(App._rest).length == 0) {
                 let pathname = M.formatUrl(options.url);
@@ -769,7 +771,9 @@
                         s2 = s2.substring(s2.indexOf(":") - 1, s2.length - 1).split("/:").slice(1);
                         let params = {};
                         for (let i = 0; i < s2.length; i++) { params[s2[i]] = s1[i]; }
+
                         options.data = Object.assign(params, options.data);
+
                         options.restUrl = pathname;
                     }
                 }
