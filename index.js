@@ -93,17 +93,17 @@
         end(callback) {
             App._end = callback;
         },
-        use(url,callback){
-            if(typeof url === 'function' || typeof url === 'object'  ){
+        async use(url,callback){
+            if(typeof url === 'function' || (typeof url === 'object' && !Array.isArray(url))  ){
                 let plugin=url;
                 let args=callback;
                 if(plugin.installed){
                     return App;
                 }
                 if (typeof plugin === 'function') {
-                    plugin(App, args);
+                    await plugin(App, args);
                 } else {
-                    plugin.install(App, args);
+                    await plugin.install(App, args);
                 }
                 plugin.installed = true;
                 M._globle_plugin.add(plugin);
@@ -1089,6 +1089,14 @@
                 }
             } else {
                 M.cache.linkJs(url);
+            }
+        },
+        waitLoadJs: async function (v,ms10=5){
+            for (let i=0;i<ms10;i++){
+                await M.delayMs(10);
+                if(window.v){
+                    break
+                }
             }
         },
         loadCss: function (name, url) {
